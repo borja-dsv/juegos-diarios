@@ -11,14 +11,15 @@ const EX = {
   globle: '🌎 Nov 18, 2026 🌍\n🔥 1 | Avg. Guesses: 6\n⬜⬜🟨🟥🟥🟩 = 6\n\nhttps://globle-game.com\n#globle',
   travle: '#travle #1435 +2\n🟧✅🟥✅✅✅\nhttps://travle.earth',
   maptap: '[www.maptap.gg](https://www.maptap.gg) November 18\n84💫 71😐 94🏅 98🔥 90👑\nFinal score: 907',
-  perceptle: 'Perceptle #124 - C (69)\n🔢 95  🎯 91  📐 87  🥁 4  ✂️ 68\nhttps://perceptle.com'
+  perceptle: 'Perceptle #124 - C (69)\n🔢 95  🎯 91  📐 87  🥁 4  ✂️ 68\nhttps://perceptle.com',
+  'size-it-up': 'Size It Up\n#101\n\nScore: 244/500\n\n🟥🟥⬜⬜⬜ 38\n🟥⬜⬜⬜⬜ 16\n🟥🟥🟥⬜⬜ 55\n🟥🟥🟥⬜⬜ 62\n🟥🟥🟥🟥⬜ 73\n\nhttps://magnitudle.com/size-it-up'
 };
 const g = (id, name = id) => ({ id, name });
 
 describe('lectores por juego (ejemplos reales)', () => {
   const cases = [
     ['poople', 5, '5/5'], ['fermi', 2.83, '2.83× · top 12%'], ['krillion', 360, '360'],
-    ['globle', 6, '6 intentos'], ['travle', 2, '+2'], ['maptap', 907, '907 pts'], ['perceptle', 69, '69 (C)']
+    ['globle', 6, '6 intentos'], ['travle', 2, '+2'], ['maptap', 907, '907 pts'], ['perceptle', 69, '69 (C)'], ['size-it-up', 244, '244/500']
   ];
   for (const [id, value, display] of cases) {
     it(id, () => {

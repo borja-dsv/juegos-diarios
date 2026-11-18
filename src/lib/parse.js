@@ -13,7 +13,8 @@ const ANCHORS = {
   fermi: [115, '2026-11-18'],
   krillion: [126, '2026-11-18'],
   travle: [1435, '2026-11-18'],
-  perceptle: [124, '2026-11-18']
+  perceptle: [124, '2026-11-18'],
+  'size-it-up': [101, '2026-11-18']
 };
 
 export const PARSERS = {
@@ -54,6 +55,12 @@ export const PARSERS = {
     const d = t.match(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2})/i);
     if (!s) return null;
     return { date: d ? isoDate(null, d[1], d[2]) : null, value: +s[1], failed: false, display: `${s[1]} pts` };
+  },
+  'size-it-up'(t) {
+    const p = t.match(/Size\s*It\s*Up\s*#(\d+)/i);
+    const s = t.match(/Score:\s*(\d+)\s*\/\s*(\d+)/i);
+    if (!p || !s) return null;
+    return { puzzle: +p[1], value: +s[1], failed: false, display: `${s[1]}/${s[2]}` };
   },
   perceptle(t) {
     const m = t.match(/Perceptle\s*#(\d+)\s*-\s*([A-F][+-]?)\s*\((\d+)\)/i);
