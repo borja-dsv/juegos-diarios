@@ -10,6 +10,7 @@
   const barBase = Math.floor(Math.random() * 5);
   import { humanError } from '../lib/account.js';
   import GameArt from './GameArt.svelte';
+  import DiceIcon from './DiceIcon.svelte';
   import Player from './Player.svelte';
   import ResultSheet from './ResultSheet.svelte';
   import GameScreen from './GameScreen.svelte';
@@ -128,20 +129,7 @@
               <span class="sub"><span class="dot"></span>{g.category}</span>
             </span>
           </button>
-          <button class="play" onclick={() => play(g)} aria-label="Jugar a {g.name}">
-            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2.2 21.6 7 12 11.8 2.4 7z" fill="#FFFFFF"/>
-              <path d="M2.4 7 12 11.8v10L2.4 17z" fill="#E7E1D6"/>
-              <path d="M21.6 7 12 11.8v10l9.6-4.8z" fill="#CFC7B8"/>
-              <g fill="#23201C">
-                <ellipse cx="12" cy="7" rx="1.5" ry=".9"/>
-                <circle cx="4.9" cy="10.6" r="1.05"/><circle cx="7.2" cy="14.3" r="1.05"/><circle cx="9.5" cy="18" r="1.05"/>
-                <circle cx="15.2" cy="12.4" r="1"/><circle cx="18.6" cy="10.7" r="1"/>
-                <circle cx="15.2" cy="15.6" r="1"/><circle cx="18.6" cy="13.9" r="1"/>
-                <circle cx="15.2" cy="18.8" r="1"/><circle cx="18.6" cy="17.1" r="1"/>
-              </g>
-            </svg>
-          </button>
+          <button class="play" onclick={() => play(g)} aria-label="Jugar a {g.name}"><DiceIcon /></button>
           <button class="podium" onclick={() => (viewing = g)} aria-label="Ranking y apuntar resultado de {g.name}"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="currentColor"/><rect x="8.5" y="9" width="7" height="13" rx="1.6" fill="currentColor"/><rect x="1.5" y="13" width="6.4" height="9" rx="1.6" fill="currentColor" opacity=".7"/><rect x="16.1" y="15.5" width="6.4" height="6.5" rx="1.6" fill="currentColor" opacity=".55"/></svg></button>
         </li>
       {/each}
@@ -175,6 +163,7 @@
               {/if}
             </span>
           </button>
+          <button class="play" onclick={() => play(g)} aria-label="Volver a jugar a {g.name} (tu resultado no cambia)"><DiceIcon /></button>
           <button class="podium" onclick={() => (viewing = g)} aria-label="Ranking de hoy de {g.name}"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="currentColor"/><rect x="8.5" y="9" width="7" height="13" rx="1.6" fill="currentColor"/><rect x="1.5" y="13" width="6.4" height="9" rx="1.6" fill="currentColor" opacity=".7"/><rect x="16.1" y="15.5" width="6.4" height="6.5" rx="1.6" fill="currentColor" opacity=".55"/></svg></button>
         </li>
       {/each}
@@ -183,7 +172,7 @@
 </main>
 
 {#if viewing}<GameScreen game={viewing} me={profile.id} isAdmin={profile.is_admin} mine={mine[viewing.id]} onBack={() => (viewing = null)} onPlay={() => play(viewing)} onRecord={() => record(viewing)} />{/if}
-{#if playing}<Player game={playing} onExit={() => (playing = null)} onRecord={() => record(playing)} />{/if}
+{#if playing}<Player game={playing} done={!!mine[playing.id]} onExit={() => (playing = null)} onRecord={() => record(playing)} />{/if}
 {#if recording}<ResultSheet game={recording} hue={0} openedAt={getPlaying()?.gameId === recording.id ? new Date(getPlaying().t).toISOString() : null} onClose={() => (recording = null)} onSaved={saved} />{/if}
 
 <style>
@@ -220,7 +209,6 @@
   .sub { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
   .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-fill); flex: none; }
   .play { flex: none; width: 40px; height: 40px; border: 0; border-radius: 12px; background: var(--f-btn-bg); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px color-mix(in srgb, var(--f-btn-bg) 35%, transparent); transition: transform .12s ease; }
-  .play svg { filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
   .play:active { transform: scale(.95); }
   .podium { flex: none; width: 40px; height: 40px; margin: 0 10px 0 8px; border: 0; border-radius: 12px; background: var(--f-soft-bg); color: var(--f-soft-fg); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .12s ease; }
   .podium:active { transform: scale(.92); }

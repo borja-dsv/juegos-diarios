@@ -10,6 +10,7 @@
   import GameArt from './GameArt.svelte';
   import Chat from './Chat.svelte';
   import CorrectSheet from './CorrectSheet.svelte';
+  import DiceIcon from './DiceIcon.svelte';
 
   let { game, me, isAdmin = false, mine = null, onBack, onPlay, onRecord } = $props();
   let history = $state([]);
@@ -67,6 +68,7 @@
         {/if}
       </div>
 
+      <button class="btn primary block" onclick={onPlay}><DiceIcon size={24} />Volver a jugar <span class="keep">(tu resultado no cambia)</span></button>
       <button class="btn block chat" onclick={() => (chatOpen = true)}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>
         Chat de {game.name}
@@ -91,7 +93,7 @@
         </div>
       </div>
       <div class="actions">
-        <button class="btn primary" onclick={onPlay}>Jugar</button>
+        <button class="btn primary" onclick={onPlay}><DiceIcon size={24} />Jugar</button>
         <button class="btn quiet" onclick={onRecord}>Apuntar resultado</button>
       </div>
     {/if}
@@ -128,7 +130,8 @@
   .ok { color: var(--done); font-weight: 600; }
   .bigmedal { width: 72px; height: 72px; flex-direction: column; font-size: 11px; font-weight: 700; }
   .bigmedal .num { font-size: 26px; line-height: 1; }
-  .chat { background: var(--f-btn-bg); color: var(--f-btn-fg); }
+  .chat { background: var(--f-soft-bg); color: var(--f-soft-fg); }
+  .keep { font-size: 13px; font-weight: 500; opacity: .85; }
   .head { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; }
   .head h2 { margin: 0; }
   ol.group { padding: 0; }
