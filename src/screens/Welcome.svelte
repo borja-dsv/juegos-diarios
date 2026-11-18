@@ -11,6 +11,7 @@
 
   const validUser = $derived(USERNAME_RE.test(username.trim()));
   const validEmail = $derived(EMAIL_RE.test(email.trim()));
+  const taken = $derived(/ya está cogido/.test(error));
 
   async function run(fn) {
     busy = true; error = '';
@@ -42,6 +43,12 @@
         <input bind:value={email} type="email" inputmode="email" autocomplete="email" placeholder="tu@email.com" />
       </label>
       {#if error}<p class="error" role="alert">{error}</p>{/if}
+      {#if taken}
+        <div class="note">
+          <b>¿Eres tú?</b> Si ya te registraste en otro dispositivo, no crees otra cuenta: recupera la tuya con tu email.
+          <button type="button" class="btn primary block" style="margin-top:10px" onclick={() => { mode = 'login'; error = ''; }}>Recuperar mi cuenta</button>
+        </div>
+      {/if}
       <button class="btn primary block" disabled={busy || !validUser || !validEmail}>{busy ? 'Creando…' : 'Entrar'}</button>
     </form>
     <p class="small muted">¿Ya tenías cuenta en otro dispositivo? <button class="link" onclick={() => { mode = 'login'; error = ''; }}>Recupérala con tu email</button></p>
