@@ -28,7 +28,7 @@
 </script>
 
 <main class="page fade-in">
-  <p class="muted" style="margin:24px 0 0">Juegos diarios</p>
+  <div class="brand"><img src="{import.meta.env.BASE_URL}icon.svg" alt="" width="40" height="40" /><span>Juegos diarios</span></div>
 
   {#if mode === 'register'}
     <h1>Únete al grupo</h1>

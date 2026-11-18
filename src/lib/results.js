@@ -13,7 +13,7 @@ export async function loadMyToday(userId) {
 // Las reglas de la base de datos solo los dejan ver si ya has registrado el tuyo.
 export async function loadGameDay(gameId, day = madridToday()) {
   const { data, error } = await supabase.from('results')
-    .select('id, user_id, value, failed, display, source, created_at, profiles(username)')
+    .select('id, user_id, value, failed, display, source, created_at, profiles!results_user_id_fkey(username)')
     .eq('game_id', gameId).eq('day', day);
   if (error) throw error;
   return data;
@@ -57,7 +57,7 @@ export function clearPlaying() {
   try { localStorage.removeItem(KEY); } catch {}
 }
 
-const COLS = 'id, user_id, game_id, day, value, failed, display, source, created_at, profiles(username)';
+const COLS = 'id, user_id, game_id, day, value, failed, display, source, created_at, profiles!results_user_id_fkey(username)';
 
 // Resultados de todos (visibles para mí) desde un día hasta ayer.
 // Hoy no cuenta en los rankings de periodo: cada uno ve hoy distinto según lo que ha jugado.

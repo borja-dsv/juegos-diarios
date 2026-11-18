@@ -59,7 +59,7 @@
       <span aria-hidden="true" style="font-size:22px">{g.emoji}</span>
       <button class="grow meta" onclick={() => startEdit(g)}>
         <span class="name">{g.name}</span>
-        <span class="small muted">{g.active ? '' : 'Oculto · '}{g.open_mode === 'embed' ? 'Dentro de la app' : 'Navegador'} · {g.better === 'low' ? 'menos es mejor' : 'más es mejor'}</span>
+        <span class="small muted">{g.active ? '' : 'Oculto · '}{g.open_mode === 'embed' ? 'En la app' : 'Navegador'} · gana {g.better === 'low' ? 'menos' : 'más'}</span>
       </button>
       <button class="btn quiet sm arrow" disabled={busy || i === 0} onclick={() => move(i, -1)} aria-label="Subir {g.name}">↑</button>
       <button class="btn quiet sm arrow" disabled={busy || i === games.length - 1} onclick={() => move(i, 1)} aria-label="Bajar {g.name}">↓</button>

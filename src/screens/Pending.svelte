@@ -12,7 +12,7 @@
 </script>
 
 <main class="page fade-in">
-  <p class="muted" style="margin:24px 0 0">Hola, {profile.username}</p>
+  <div class="brand"><img src="{import.meta.env.BASE_URL}icon.svg" alt="" width="40" height="40" /><span>Hola, {profile.username}</span></div>
   {#if rejected}
     <h1>Solicitud no aprobada</h1>
     <p class="lead">Un admin ha rechazado tu solicitud. Si crees que es un error, habla con quien te pasó el enlace.</p>

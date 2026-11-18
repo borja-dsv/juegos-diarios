@@ -26,7 +26,7 @@ body {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: 16px; line-height: 1.45; -webkit-font-smoothing: antialiased;
 }
-button, input, select, a { font: inherit; color: inherit; }
+button, input, select, textarea, a { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 main.page {
@@ -35,6 +35,8 @@ main.page {
 }
 h1 { font-family: var(--display); font-size: 34px; line-height: 1.05; font-weight: 800; letter-spacing: -0.03em; margin: 4px 0 0; }
 h2 { font-family: var(--display); font-size: 20px; line-height: 1.2; font-weight: 750; margin: 24px 0 10px; }
+.brand { display: flex; align-items: center; gap: 10px; margin: 24px 0 18px; font-weight: 700; color: var(--muted); }
+.brand img { border-radius: 10px; }
 .lead { color: var(--muted); margin: 8px 0 20px; max-width: 60ch; }
 .muted { color: var(--muted); }
 .small { font-size: 13px; }
@@ -89,9 +91,11 @@ nav.tabs .in { display: flex; max-width: 560px; margin: 0 auto; }
 .tab[aria-current="page"]::before { content: ""; position: absolute; top: 0; left: 30%; right: 30%; height: 3px; border-radius: 0 0 3px 3px; background: var(--accent); }
 .tab .ico { font-size: 18px; line-height: 1; }
 
+.skeleton { background: linear-gradient(90deg, var(--line) 25%, color-mix(in srgb, var(--line) 50%, var(--surface)) 50%, var(--line) 75%) 0 0 / 200% 100%; animation: shimmer 1.2s linear infinite; border-radius: var(--radius); }
+@keyframes shimmer { to { background-position: -200% 0; } }
 .fade-in { animation: fade .25s ease-out; }
 @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } .btn { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .fade-in, .skeleton { animation: none; } .btn { transition: none; } }
 
 /* Hojas que suben desde abajo */
 .sheet { position: fixed; inset: 0; z-index: 40; background: rgba(8, 10, 20, .5); display: flex; align-items: flex-end; justify-content: center; }

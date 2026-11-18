@@ -49,13 +49,15 @@
   }
 </script>
 
+<svelte:window onkeydown={(e) => e.key === 'Escape' && onClose()} />
+
 <div class="sheet" role="presentation" onclick={(e) => e.target === e.currentTarget && onClose()}>
   <div class="panel" role="dialog" aria-modal="true" aria-labelledby="rs-title" style={catStyle(game.category)}>
     <button class="closex" onclick={onClose} aria-label="Cerrar">✕</button>
     <h2 id="rs-title"><span aria-hidden="true">{game.emoji}</span> ¿Cómo te ha ido en {game.name}?</h2>
     <p class="muted small">{game.better === 'low' ? 'Gana el número más bajo.' : 'Gana el número más alto.'} Solo puedes apuntarlo una vez.</p>
 
-    <button class="btn primary block" style="margin:12px 0" disabled={busy} onclick={pasteFromClipboard}>📋 Pegar lo copiado del juego</button>
+    <button class="btn primary block" style="margin:12px 0" disabled={busy} onclick={pasteFromClipboard}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path></svg>Pegar lo copiado del juego</button>
     {#if info}<p class="small muted">{info}</p>{/if}
     <label class="field"><span>…o pega aquí el texto de «Compartir»</span>
       <textarea bind:value={pasted} placeholder="Mantén pulsado y elige Pegar" onpaste={(e) => { const t = e.clipboardData?.getData('text'); if (t) { e.preventDefault(); pasted = t; usePasted(t); } }}></textarea>

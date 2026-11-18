@@ -30,6 +30,8 @@
   });
 </script>
 
+<svelte:window onkeydown={(e) => e.key === 'Escape' && !chatOpen && onBack()} />
+
 <div class="screen fade-in" role="dialog" aria-modal="true" aria-label={game.name} style={catStyle(game.category)}>
   <header>
     <GameArt {game} height={176} />
@@ -106,7 +108,7 @@
 <style>
   .screen { position: fixed; inset: 0; z-index: 25; background: var(--bg); overflow-y: auto; }
   header { position: relative; }
-  .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.05) 40%, rgba(0,0,0,.45)); }
+  .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.3), rgba(0,0,0,0) 35%, rgba(0,0,0,.72)); }
   .back { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); left: 14px; width: 44px; height: 44px; border-radius: 22px; border: 0; background: rgba(0,0,0,.35); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .title { position: absolute; left: 16px; right: 16px; bottom: -30px; display: flex; align-items: flex-end; gap: 12px; }
   .title h1 { color: #fff; font-size: 30px; margin: 0; text-shadow: 0 1px 8px rgba(0,0,0,.35); }

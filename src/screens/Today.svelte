@@ -45,7 +45,8 @@
   }
 
   function play(g) { markPlaying(g.id); viewing = null; playing = g; }
-  function record(g) { playing = null; viewing = null; recording = g; }
+  // Si apuntas desde la pantalla de un juego, al cerrar vuelves a ella.
+  function record(g) { playing = null; recording = g; }
   async function saved(row) {
     mine = { ...mine, [row.game_id]: row };
     clearPlaying();
@@ -91,6 +92,13 @@
   {#if error}<p class="error">{error}</p>{/if}
   {#if loaded && !games.length && !error}<p class="lead">Aún no hay juegos. Un admin puede añadirlos en Ajustes.</p>{/if}
 
+  {#if !loaded}
+    <h2>Pendientes</h2>
+    <div class="grid" aria-busy="true" aria-label="Cargando juegos">
+      {#each [1, 2, 3, 4] as i (i)}<div class="skeleton" style="height:168px"></div>{/each}
+    </div>
+  {/if}
+
   {#if pending.length}
     <h2>Pendientes</h2>
     <div class="grid">
@@ -103,9 +111,7 @@
               <span class="catchip">{g.category}</span>
             </span>
           </button>
-          <button class="cinfo" onclick={() => (viewing = g)} aria-label="Ver {g.name}: apuntar resultado o estadísticas">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
-          </button>
+          <button class="cinfo" onclick={() => (viewing = g)} aria-label="Ver {g.name}: apuntar resultado y estadísticas">Apuntar</button>
         </div>
       {/each}
     </div>
@@ -146,13 +152,15 @@
   .cmain { width: 100%; display: flex; flex-direction: column; padding: 0; border: 0; background: none; text-align: left; color: inherit; cursor: pointer; }
   .band { position: relative; display: block; }
   .badge { position: absolute; left: 12px; bottom: -22px; width: 44px; height: 44px; border-radius: 14px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 2px 6px rgba(21,19,43,.18); }
-  .cbody { padding: 28px 12px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .cbody { padding: 28px 12px 52px; display: flex; flex-direction: column; gap: 6px; }
   .cname { font-family: var(--display); font-size: 17px; font-weight: 750; line-height: 1.15; }
-  .cinfo { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(0,0,0,.35); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .cinfo { position: absolute; right: 10px; bottom: 10px; height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-size: 13px; font-weight: 650; cursor: pointer; }
+  .cinfo::before { content: ''; position: absolute; inset: -6px; }
   .donelist { display: flex; flex-direction: column; gap: 8px; }
   .drow { display: flex; align-items: center; gap: 12px; min-height: 62px; padding: 8px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; text-align: left; color: inherit; cursor: pointer; }
   .dart { position: relative; width: 44px; flex: none; }
   .demoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; text-shadow: 0 1px 4px rgba(0,0,0,.4); }
+  .drow .grow { flex: 1; min-width: 0; }
   .drow .name { font-weight: 650; }
   .drow .small { display: block; }
   .dres { font-size: 20px; }
