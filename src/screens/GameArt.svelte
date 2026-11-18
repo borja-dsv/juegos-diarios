@@ -4,6 +4,11 @@
   import { catStyle } from '../lib/categories.js';
   let { game, height = 64, rounded = false } = $props();
   let broken = $state(false);
+  // Radar de 5 ejes, como la imagen final de Perceptle (valores decorativos).
+  const pt = (i, r) => [Math.sin((i * 2 * Math.PI) / 5) * r, -Math.cos((i * 2 * Math.PI) / 5) * r];
+  const pent = (r) => [0, 1, 2, 3, 4].map((i) => pt(i, r).join(',')).join(' ');
+  const SCORES = [0.95, 0.91, 0.87, 0.1, 0.68];
+  const shape = SCORES.map((s, i) => pt(i, s * 48).join(',')).join(' ');
   const WORD = [['J', '#6AAA64'], ['U', '#C9B458'], ['E', '#787C7E'], ['G', '#6AAA64'], ['O', '#6AAA64']];
 </script>
 
@@ -14,6 +19,15 @@
     <div class="word">{#each WORD as [l, c]}<span style="background:{c}">{l}</span>{/each}</div>
   {:else if game.id === 'poople'}
     <div class="poople"></div>
+  {:else if game.id === 'perceptle'}
+    <div class="radar">
+      <svg viewBox="-60 -56 120 108">
+        {#each [48, 36, 24, 12] as r}<polygon points={pent(r)} fill="none" stroke="#3A4250" stroke-width="1"/>{/each}
+        {#each [0, 1, 2, 3, 4] as i}<line x1="0" y1="0" x2={pt(i, 48)[0]} y2={pt(i, 48)[1]} stroke="#3A4250" stroke-width="1"/>{/each}
+        <polygon points={shape} fill="rgba(34,211,238,.22)" stroke="#22D3EE" stroke-width="2.5" stroke-linejoin="round"/>
+        {#each SCORES as s, i}<circle cx={pt(i, s * 48)[0]} cy={pt(i, s * 48)[1]} r="3" fill="#22D3EE"/>{/each}
+      </svg>
+    </div>
   {:else if game.id === 'maptap'}
     <svg class="pin" viewBox="0 0 24 24"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z" fill="#fff"/><circle cx="12" cy="10" r="2.6" fill="var(--c-fill)"/></svg>
   {/if}
@@ -26,5 +40,7 @@
   .word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 4px; background: #121213; }
   .word span { width: 22%; max-width: 30px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: clamp(10px, 40%, 18px); border-radius: 3px; }
   .poople { position: absolute; inset: 0; background: conic-gradient(#7B4B2A 25%, #F3EDE4 0 50%, #7B4B2A 0 75%, #F3EDE4 0) 0 0 / 22px 22px; }
+  .radar { position: absolute; inset: 0; background: #0D1117; display: flex; align-items: center; justify-content: center; }
+  .radar svg { height: 88%; }
   .pin { position: absolute; right: 14%; top: 50%; transform: translateY(-50%); height: 70%; filter: drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
 </style>
