@@ -18,7 +18,8 @@
   {:else if game.id === 'wordle-es'}
     <div class="word">{#each WORD as [l, c]}<span style="background:{c}">{l}</span>{/each}</div>
   {:else if game.id === 'poople'}
-    <div class="poople"></div>
+    <!-- 4 cacas en fila: las 4 letras de la palabra -->
+    <div class="poople" style="--h:{height}px"><span>💩</span><span>💩</span><span>💩</span><span>💩</span></div>
   {:else if game.id === 'perceptle'}
     <div class="radar">
       <svg viewBox="-60 -56 120 108">
@@ -39,7 +40,8 @@
   img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 3%; padding: 0 6%; background: #121213; }
   .word span { flex: 1; max-width: 30px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: clamp(10px, 40%, 18px); border-radius: 3px; }
-  .poople { position: absolute; inset: 0; background: conic-gradient(#7B4B2A 25%, #F3EDE4 0 50%, #7B4B2A 0 75%, #F3EDE4 0) 0 0 / 22px 22px; }
+  .poople { position: absolute; inset: 0; container-type: inline-size; display: flex; align-items: center; justify-content: center; gap: 2%; background: radial-gradient(circle at 50% 40%, #FBF6EE, #EADBC6); }
+  .poople span { font-size: min(19cqw, calc(var(--h) * .5)); line-height: 1; filter: drop-shadow(0 1px 1px rgba(80,50,20,.25)); }
   .radar { position: absolute; inset: 0; background: #0D1117; display: flex; align-items: center; justify-content: center; }
   .radar svg { height: 88%; }
   .pin { position: absolute; right: 14%; top: 50%; transform: translateY(-50%); height: 70%; filter: drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
