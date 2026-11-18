@@ -26,6 +26,11 @@
   // Pendientes agrupados por nivel (T1, T2…), en el orden que ha decidido el admin.
   const pendingTiers = $derived([...new Set(pending.map((g) => g.tier ?? 2))].sort().map((t) => ({ tier: t, games: pending.filter((g) => (g.tier ?? 2) === t) })));
   const done = $derived(games.filter((g) => mine[g.id]));
+  // Progreso por nivel: un tramo por cada nivel (T1, T2…), proporcional a su número de juegos.
+  const tiers = $derived([...new Set(games.map((g) => g.tier ?? 2))].sort().map((t) => {
+    const list = games.filter((g) => (g.tier ?? 2) === t);
+    return { tier: t, total: list.length, done: list.filter((g) => mine[g.id]).length };
+  }));
   const myStreak = $derived(streak(days, madridToday()));
   // Mi puesto de hoy en cada juego que he jugado.
   const myPos = $derived.by(() => {
@@ -80,8 +85,13 @@
   </div>
   <h1 class="hello">{!games.length ? `Hola, ${profile.username}` : pending.length ? `Te ${pending.length === 1 ? 'queda 1 juego' : `quedan ${pending.length} juegos`}` : 'Todo hecho por hoy'}</h1>
 
-  <div class="progress" role="progressbar" aria-label="Juegos hechos hoy" aria-valuemin="0" aria-valuemax={games.length} aria-valuenow={done.length}>
-    <span class="fill" style="width:{games.length ? (done.length / games.length) * 100 : 0}%"></span>
+  <div class="bars" role="img" aria-label={tiers.map((t) => `T${t.tier}: ${t.done} de ${t.total}`).join(', ')}>
+    {#each tiers as t (t.tier)}
+      <div class="tramo" style="flex:{t.total}">
+        <div class="track"><span class="fill t{t.tier}" style="width:{t.total ? (t.done / t.total) * 100 : 0}%"></span></div>
+        <span class="tlabel"><b>T{t.tier}</b> · {t.done}/{t.total}</span>
+      </div>
+    {/each}
   </div>
   <p class="meta">
     <span><b>{done.length}</b> de {games.length} hechos</span>
@@ -148,8 +158,16 @@
   .date { font-size: 14px; font-weight: 500; }
   .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); color: var(--ink); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
   .hello { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; margin: 10px 0 16px; }
-  .progress { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+  .bars { display: flex; gap: 0; margin-top: 2px; }
+  .tramo { position: relative; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding-right: 9px; }
+  .tramo + .tramo { padding-left: 2px; }
+  /* línea vertical al final de cada tramo: marca dónde acaba cada nivel */
+  .tramo::after { content: ''; position: absolute; right: 3px; top: -5px; width: 2px; height: 16px; border-radius: 1px; background: var(--muted); opacity: .5; }
+  .track { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+  .tlabel { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .tlabel b { color: var(--ink); font-weight: 650; }
   .fill { display: block; height: 100%; border-radius: 3px; background: var(--accent); transition: width .5s ease; }
+  .fill.t2, .fill.t3 { background: color-mix(in srgb, var(--accent) 50%, var(--surface-2)); }
   .meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 8px; font-size: 14px; color: var(--muted); }
   .meta b { color: var(--ink); font-weight: 650; }
   .section { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 4px 10px; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
