@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { loadPlayers, setStatus, setAdmin } from '../lib/admin.js';
+  import { loadPlayers, setStatus, setAdmin, loadAutoApprove, setAutoApprove } from '../lib/admin.js';
   import { humanError } from '../lib/account.js';
   import GamesAdmin from './GamesAdmin.svelte';
   import { getTheme, setTheme } from '../lib/theme.js';
@@ -9,6 +9,7 @@
   let players = $state([]);
   let error = $state('');
   let busyId = $state(null);
+  let autoApprove = $state(null);   // null = cargando
   let theme = $state(getTheme());
   const THEMES = [['system', 'Sistema'], ['light', 'Claro'], ['dark', 'Oscuro']];
   function pickTheme(t) { theme = t; setTheme(t); }
@@ -20,7 +21,7 @@
 
   async function reload() {
     if (!profile.is_admin) return;
-    try { players = await loadPlayers(); } catch (e) { error = humanError(e); }
+    try { [players, autoApprove] = await Promise.all([loadPlayers(), loadAutoApprove()]); } catch (e) { error = humanError(e); }
   }
   async function act(id, fn) {
     busyId = id; error = '';
@@ -54,6 +55,19 @@
   {#if profile.is_admin}
     {#if error}<p class="error" role="alert">{error}</p>{/if}
 
+    <h2>Registro</h2>
+    <ul class="group">
+      <li class="row">
+        <span class="grow">
+          <span class="name">Entrar sin aprobación</span>
+          <span class="small muted">{autoApprove ? 'Abierto: quien tenga el enlace entra directamente.' : 'Cerrado: un admin aprueba a cada persona nueva.'}</span>
+        </span>
+        <button class="switch" role="switch" aria-checked={!!autoApprove} aria-label="Entrar sin aprobación" disabled={autoApprove === null || busyId === 'auto'}
+          onclick={() => act('auto', async () => { await setAutoApprove(!autoApprove); })}><span></span></button>
+      </li>
+    </ul>
+    {#if autoApprove}<p class="small muted">Comparte el enlace solo con tu grupo, y ciérralo cuando estéis todos.</p>{/if}
+
     <h2>Solicitudes pendientes</h2>
     {#if pending.length}
       <ul class="group">
@@ -86,6 +100,12 @@
 </main>
 
 <style>
+  .switch { flex: none; width: 52px; height: 32px; border-radius: 16px; border: 0; padding: 3px; background: var(--line); cursor: pointer; transition: background .2s ease; }
+  .switch span { display: block; width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s ease; }
+  .switch[aria-checked='true'] { background: var(--f-btn-bg, var(--accent)); }
+  .switch[aria-checked='true'] span { transform: translateX(20px); }
+  .switch:disabled { opacity: .5; }
+  @media (prefers-reduced-motion: reduce) { .switch, .switch span { transition: none; } }
   .themes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--line); border-radius: 12px; padding: 3px; height: 44px; }
   .themes button { border: 0; border-radius: 9px; background: transparent; color: var(--muted); font-weight: 600; font-size: 14px; cursor: pointer; }
   .themes button[aria-checked='true'] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 3px rgba(11,11,11,.12); }
