@@ -61,20 +61,12 @@
           <g transform="translate(80 46)"><rect width="32" height="22" rx="3" fill="#009C3B"/><path d="M16 3 L29 11 L16 19 L3 11 Z" fill="#FFDF00"/><circle cx="16" cy="11" r="4.6" fill="#002776"/></g>
         </svg>
       {:else if game.id === 'travle'}
-        <!-- mapa plano: de España a Japón -->
-        <svg class="fill" viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice">
-          <rect width="160" height="90" fill="#CFE6F3"/>
-          <g stroke="#B5D4E6" stroke-width=".6">{#each [15, 30, 45, 60, 75] as y}<line x1="0" y1={y} x2="160" y2={y}/>{/each}{#each [20, 40, 60, 80, 100, 120, 140] as x}<line x1={x} y1="0" x2={x} y2="90"/>{/each}</g>
-          <g fill="#8CC79A">
-            <path d="M8 22c10-8 26-10 34-4 6 5 2 12-6 14-8 2-12 10-18 8-8-3-16-12-10-18z"/>
-            <path d="M52 16c14-6 40-8 62-4 18 3 32 8 34 16 1 7-10 10-20 12-10 2-18 10-30 9-12-1-20-6-32-5-10 1-18-4-16-12 1-7 0-12 2-16z"/>
-            <path d="M58 46c8-2 16 2 18 10 2 9-4 20-12 22-7 2-12-6-12-14 0-8 0-16 6-18z"/>
-            <path d="M118 52c8-2 18 1 22 7 3 6-2 12-10 12-9 0-16-5-17-10 0-4 1-8 5-9z"/>
-          </g>
-          <path d="M57 30 Q 95 4 136 26" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-dasharray="4 3" stroke-linecap="round"/>
-          <path d="M136 26 l-8 -1 4 -6 z" fill="#C0392B" transform="rotate(28 136 26)"/>
-          <g transform="translate(51 30)"><rect x="-7" y="-5" width="14" height="10" rx="1.5" fill="#AA151B" stroke="#fff" stroke-width="1"/><rect x="-7" y="-2.5" width="14" height="5" fill="#F1BF00"/></g>
-          <g transform="translate(140 32)"><rect x="-7" y="-5" width="14" height="10" rx="1.5" fill="#fff" stroke="#fff" stroke-width="1"/><circle r="2.8" fill="#BC002D"/></g>
+        <!-- mapamundi de puntos (Natural Earth, dominio público) con flecha de España a Japón -->
+        <svg class="fill" viewBox="0 0 160 80" preserveAspectRatio="xMidYMid meet">
+          <path d="M27 1.8h0M37.8 1.8h0M52.2 1.8h0M55.8 1.8h0M59.4 1.8h0M63 1.8h0M117 1.8h0M120.6 1.8h0M124.2 1.8h0M138.6 1.8h0M142.2 1.8h0M5.4 5.4h0M9 5.4h0M12.6 5.4h0M16.2 5.4h0M19.8 5.4h0M23.4 5.4h0M27 5.4h0M34.2 5.4h0M37.8 5.4h0M45 5.4h0M55.8 5.4h0M59.4 5.4h0M63 5.4h0M84.6 5.4h0M88.2 5.4h0M91.8 5.4h0M106.2 5.4h0M109.8 5.4h0M113.4 5.4h0M117 5.4h0M120.6 5.4h0M124.2 5.4h0M127.8 5.4h0M131.4 5.4h0M135 5.4h0M138.6 5.4h0M142.2 5.4h0M145.8 5.4h0M149.4 5.4h0M153 5.4h0M5.4 9h0M9 9h0M12.6 9h0M16.2 9h0M19.8 9h0M23.4 9h0M27 9h0M30.6 9h0M34.2 9h0M45 9h0M55.8 9h0M81 9h0M88.2 9h0M91.8 9h0M95.4 9h0M99 9h0M102.6 9h0M106.2 9h0M109.8 9h0M113.4 9h0M117 9h0M120.6 9h0M124.2 9h0M127.8 9h0M131.4 9h0M135 9h0M138.6 9h0M142.2 9h0M145.8 9h0M149.4 9h0M153 9h0M5.4 12.6h0M19.8 12.6h0M23.4 12.6h0M27 12.6h0M30.6 12.6h0M34.2 12.6h0M45 12.6h0M73.8 12.6h0M81 12.6h0M88.2 12.6h0M91.8 12.6h0M95.4 12.6h0M99 12.6h0M102.6 12.6h0M106.2 12.6h0M109.8 12.6h0M113.4 12.6h0M117 12.6h0M120.6 12.6h0M124.2 12.6h0M127.8 12.6h0M131.4 12.6h0M135 12.6h0M145.8 12.6h0M19.8 16.2h0M23.4 16.2h0M27 16.2h0M30.6 16.2h0M34.2 16.2h0M37.8 16.2h0M41.4 16.2h0M45 16.2h0M48.6 16.2h0M73.8 16.2h0M77.4 16.2h0M81 16.2h0M84.6 16.2h0M88.2 16.2h0M91.8 16.2h0M95.4 16.2h0M99 16.2h0M102.6 16.2h0M106.2 16.2h0M109.8 16.2h0M113.4 16.2h0M117 16.2h0M120.6 16.2h0M124.2 16.2h0M127.8 16.2h0M131.4 16.2h0M135 16.2h0M23.4 19.8h0M27 19.8h0M30.6 19.8h0M34.2 19.8h0M37.8 19.8h0M41.4 19.8h0M45 19.8h0M77.4 19.8h0M81 19.8h0M84.6 19.8h0M88.2 19.8h0M95.4 19.8h0M99 19.8h0M102.6 19.8h0M106.2 19.8h0M109.8 19.8h0M113.4 19.8h0M117 19.8h0M120.6 19.8h0M124.2 19.8h0M127.8 19.8h0M131.4 19.8h0M135 19.8h0M138.6 19.8h0M23.4 23.4h0M27 23.4h0M30.6 23.4h0M34.2 23.4h0M37.8 23.4h0M41.4 23.4h0M73.8 23.4h0M88.2 23.4h0M91.8 23.4h0M95.4 23.4h0M102.6 23.4h0M106.2 23.4h0M109.8 23.4h0M113.4 23.4h0M117 23.4h0M120.6 23.4h0M124.2 23.4h0M127.8 23.4h0M131.4 23.4h0M27 27h0M30.6 27h0M34.2 27h0M37.8 27h0M73.8 27h0M77.4 27h0M81 27h0M91.8 27h0M95.4 27h0M99 27h0M102.6 27h0M106.2 27h0M109.8 27h0M113.4 27h0M117 27h0M120.6 27h0M124.2 27h0M127.8 27h0M27 30.6h0M30.6 30.6h0M70.2 30.6h0M73.8 30.6h0M77.4 30.6h0M81 30.6h0M84.6 30.6h0M88.2 30.6h0M91.8 30.6h0M95.4 30.6h0M102.6 30.6h0M106.2 30.6h0M109.8 30.6h0M113.4 30.6h0M117 30.6h0M120.6 30.6h0M124.2 30.6h0M127.8 30.6h0M30.6 34.2h0M41.4 34.2h0M70.2 34.2h0M73.8 34.2h0M77.4 34.2h0M81 34.2h0M84.6 34.2h0M88.2 34.2h0M91.8 34.2h0M95.4 34.2h0M99 34.2h0M109.8 34.2h0M113.4 34.2h0M117 34.2h0M120.6 34.2h0M37.8 37.8h0M70.2 37.8h0M73.8 37.8h0M77.4 37.8h0M81 37.8h0M84.6 37.8h0M88.2 37.8h0M91.8 37.8h0M95.4 37.8h0M109.8 37.8h0M120.6 37.8h0M45 41.4h0M70.2 41.4h0M73.8 41.4h0M77.4 41.4h0M81 41.4h0M84.6 41.4h0M88.2 41.4h0M91.8 41.4h0M95.4 41.4h0M109.8 41.4h0M127.8 41.4h0M131.4 41.4h0M41.4 45h0M45 45h0M48.6 45h0M52.2 45h0M81 45h0M84.6 45h0M88.2 45h0M91.8 45h0M95.4 45h0M127.8 45h0M41.4 48.6h0M45 48.6h0M48.6 48.6h0M52.2 48.6h0M55.8 48.6h0M81 48.6h0M84.6 48.6h0M88.2 48.6h0M91.8 48.6h0M135 48.6h0M138.6 48.6h0M41.4 52.2h0M45 52.2h0M48.6 52.2h0M52.2 52.2h0M55.8 52.2h0M59.4 52.2h0M84.6 52.2h0M88.2 52.2h0M91.8 52.2h0M45 55.8h0M48.6 55.8h0M52.2 55.8h0M55.8 55.8h0M81 55.8h0M84.6 55.8h0M88.2 55.8h0M91.8 55.8h0M131.4 55.8h0M135 55.8h0M138.6 55.8h0M45 59.4h0M48.6 59.4h0M52.2 59.4h0M55.8 59.4h0M84.6 59.4h0M88.2 59.4h0M95.4 59.4h0M127.8 59.4h0M131.4 59.4h0M135 59.4h0M138.6 59.4h0M149.4 59.4h0M45 63h0M48.6 63h0M52.2 63h0M84.6 63h0M88.2 63h0M127.8 63h0M131.4 63h0M135 63h0M138.6 63h0M142.2 63h0M45 66.6h0M48.6 66.6h0M84.6 66.6h0M127.8 66.6h0M138.6 66.6h0M142.2 66.6h0M45 70.2h0M153 70.2h0M45 73.8h0M48.6 77.4h0" stroke="#7FA7C9" stroke-width="2.1" stroke-linecap="round" opacity=".85"/>
+          <path d="M73.9 22.4 Q 105.8 2.4 135.1 23.7" fill="none" stroke="#FF7A59" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="5 3.5"/>
+          <path d="M138.8 25.9 l-7.2 -1.2 3.4 -5.8 z" fill="#FF7A59" transform="rotate(14 137.6 25.3)"/>
+          <circle cx="73.9" cy="22.4" r="2.6" fill="#FF7A59"/>
         </svg>
       {/if}
     </div>
@@ -134,5 +126,6 @@
   .ground { position: absolute; left: 12%; right: 12%; bottom: 14%; height: 2px; background: rgba(120,40,30,.35); border-radius: 1px; }
 
   .flagle { background: #1E2A44; }
-  .travle { background: #CFE6F3; }
+  .travle { background: radial-gradient(circle at 50% 30%, #1E3A5C, #0E1E33 75%); }
+  .travle .fill { width: 96%; height: 96%; }
 </style>
