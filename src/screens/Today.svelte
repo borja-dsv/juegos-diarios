@@ -1,45 +1,58 @@
 <script>
   import { onMount } from 'svelte';
-  import { loadGames, hueOf } from '../lib/games.js';
-  import { loadMyToday, markPlaying, getPlaying, clearPlaying } from '../lib/results.js';
-  import { longDate } from '../lib/day.js';
+  import { loadGames } from '../lib/games.js';
+  import { loadMyToday, loadMyDays, loadTodayVisible, rank, markPlaying, getPlaying, clearPlaying } from '../lib/results.js';
+  import { streak } from '../lib/standings.js';
+  import { madridToday, longDate } from '../lib/day.js';
+  import { catStyle } from '../lib/categories.js';
   import { humanError } from '../lib/account.js';
+  import GameArt from './GameArt.svelte';
   import Player from './Player.svelte';
   import ResultSheet from './ResultSheet.svelte';
-  import DaySheet from './DaySheet.svelte';
+  import GameScreen from './GameScreen.svelte';
 
   let { profile } = $props();
   let games = $state([]);
   let mine = $state({});            // mis resultados de hoy por juego
+  let todayRows = $state([]);       // resultados de hoy que puedo ver
+  let days = $state([]);            // días en los que he jugado
   let error = $state('');
   let loaded = $state(false);
-  let playing = $state(null);       // juego abierto en pantalla completa
-  let recording = $state(null);     // juego cuyo resultado estoy apuntando
-  let viewing = $state(null);       // juego cuyo ranking de hoy estoy viendo
+  let playing = $state(null);       // juego abierto a pantalla completa
+  let recording = $state(null);     // juego cuyo resultado apunto
+  let viewing = $state(null);       // pantalla de un juego
 
-  const hues = $derived(Object.fromEntries(games.map((g, i) => [g.id, hueOf(g, i)])));
   const pending = $derived(games.filter((g) => !mine[g.id]));
   const done = $derived(games.filter((g) => mine[g.id]));
+  const myStreak = $derived(streak(days, madridToday()));
+  // Mi puesto de hoy en cada juego que he jugado.
+  const myPos = $derived.by(() => {
+    const out = {};
+    for (const g of done) {
+      const ranked = rank(todayRows.filter((r) => r.game_id === g.id), g.better);
+      const me = ranked.find((r) => r.user_id === profile.id);
+      out[g.id] = { pos: me?.pos, of: ranked.length };
+    }
+    return out;
+  });
+  const winsToday = $derived(Object.values(myPos).filter((p) => p.pos === 1).length);
 
   async function load() {
     try {
-      [games, mine] = await Promise.all([loadGames(), loadMyToday(profile.id)]);
+      [games, mine, todayRows, days] = await Promise.all([loadGames(), loadMyToday(profile.id), loadTodayVisible(), loadMyDays(profile.id)]);
     } catch (e) { error = humanError(e); }
     loaded = true;
   }
 
-  function open(g) {
-    if (mine[g.id]) { viewing = g; return; }
-    markPlaying(g.id);
-    playing = g;
-  }
-  function record(g) { playing = null; recording = g; }
-  function saved(row) {
+  function play(g) { markPlaying(g.id); viewing = null; playing = g; }
+  function record(g) { playing = null; viewing = null; recording = g; }
+  async function saved(row) {
     mine = { ...mine, [row.game_id]: row };
     clearPlaying();
     const g = recording;
     recording = null;
-    viewing = g;              // al apuntar, se desbloquea el ranking de hoy
+    await load();              // ahora puedo ver el ranking de hoy de ese juego
+    viewing = g;
   }
 
   // Al volver de un juego abierto fuera de la app, pide el resultado.
@@ -58,28 +71,41 @@
 </script>
 
 <main class="page fade-in">
-  <div class="muted">{longDate()}</div>
-  <h1>{!games.length ? `Hola, ${profile.username}` : pending.length ? `Te ${pending.length === 1 ? 'queda 1 juego' : `quedan ${pending.length} juegos`}` : 'Todo hecho por hoy 🎉'}</h1>
-  <p class="muted" style="margin:6px 0 0">{done.length} de {games.length} hechos</p>
+  <div class="top">
+    <span class="muted date">{longDate()}</span>
+    <span class="avatar" aria-label="Tu perfil: {profile.username}">{profile.username.charAt(0).toUpperCase()}</span>
+  </div>
+  <h1>{!games.length ? `Hola, ${profile.username}` : pending.length ? `Te ${pending.length === 1 ? 'queda 1 juego' : `quedan ${pending.length} juegos`}` : 'Todo hecho por hoy'}</h1>
+  <p class="muted" style="margin:4px 0 0">{done.length} de {games.length} hechos</p>
 
   <div class="segs" aria-hidden="true">
-    {#each games as g (g.id)}<span class="seg" class:on={mine[g.id]} style="--h:{hues[g.id]}"></span>{/each}
+    {#each games as g (g.id)}<span class="seg" class:on={mine[g.id]} style={catStyle(g.category)}></span>{/each}
+  </div>
+
+  <div class="stats3">
+    <div class="stat"><span class="k">Racha</span><span class="v">{myStreak} <small>{myStreak === 1 ? 'día' : 'días'}</small></span></div>
+    <div class="stat"><span class="k">Hechos hoy</span><span class="v">{done.length}<small>/{games.length}</small></span></div>
+    <div class="stat"><span class="k">Ganas hoy</span><span class="v">{winsToday}</span></div>
   </div>
 
   {#if error}<p class="error">{error}</p>{/if}
   {#if loaded && !games.length && !error}<p class="lead">Aún no hay juegos. Un admin puede añadirlos en Ajustes.</p>{/if}
 
   {#if pending.length}
+    <h2>Pendientes</h2>
     <div class="grid">
       {#each pending as g (g.id)}
-        <div class="card" style="--h:{hues[g.id]}">
-          <button class="cmain" onclick={() => open(g)}>
-            <span class="cem" aria-hidden="true">{g.emoji}</span>
-            <span class="cname">{g.name}</span>
-            <span class="ccat">{g.category}</span>
-            <span class="cstate">Jugar</span>
+        <div class="card" style={catStyle(g.category)}>
+          <button class="cmain" onclick={() => play(g)} aria-label="Jugar a {g.name}">
+            <span class="band"><GameArt game={g} height={72} /><span class="badge" aria-hidden="true">{g.emoji}</span></span>
+            <span class="cbody">
+              <span class="cname">{g.name}</span>
+              <span class="catchip">{g.category}</span>
+            </span>
           </button>
-          <button class="cadd" onclick={() => record(g)} aria-label="Apuntar resultado de {g.name}">+</button>
+          <button class="cinfo" onclick={() => (viewing = g)} aria-label="Ver {g.name}: apuntar resultado o estadísticas">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+          </button>
         </div>
       {/each}
     </div>
@@ -87,41 +113,48 @@
 
   {#if done.length}
     <h2>Hechos hoy</h2>
-    <div class="grid">
+    <div class="donelist">
       {#each done as g (g.id)}
-        <button class="card done" style="--h:{hues[g.id]}" onclick={() => open(g)} aria-label="{g.name}: {mine[g.id].display}. Ver ranking de hoy">
-          <span class="cem" aria-hidden="true">{g.emoji}</span>
-          <span class="cname">{g.name}</span>
-          <span class="cres">{mine[g.id].display}</span>
-          <span class="ccat">Ver ranking →</span>
+        <button class="drow" onclick={() => (viewing = g)} style={catStyle(g.category)}>
+          <span class="dart"><GameArt game={g} height={44} rounded /><span class="demoji" aria-hidden="true">{g.emoji}</span></span>
+          <span class="grow">
+            <span class="name">{g.name}</span>
+            <span class="small muted">{myPos[g.id]?.pos ? `${myPos[g.id].pos}º de ${myPos[g.id].of}` : 'Sin puesto'}{myPos[g.id]?.pos === 1 ? ' · ganas hoy' : ''}</span>
+          </span>
+          <span class="num dres">{mine[g.id].display}</span>
         </button>
       {/each}
     </div>
   {/if}
 </main>
 
+{#if viewing}<GameScreen game={viewing} me={profile.id} mine={mine[viewing.id]} onBack={() => (viewing = null)} onPlay={() => play(viewing)} onRecord={() => record(viewing)} />{/if}
 {#if playing}<Player game={playing} onExit={() => (playing = null)} onRecord={() => record(playing)} />{/if}
-{#if recording}<ResultSheet game={recording} hue={hues[recording.id]} openedAt={getPlaying()?.gameId === recording.id ? new Date(getPlaying().t).toISOString() : null} onClose={() => (recording = null)} onSaved={saved} />{/if}
-{#if viewing}<DaySheet game={viewing} hue={hues[viewing.id]} me={profile.id} onClose={() => (viewing = null)} />{/if}
+{#if recording}<ResultSheet game={recording} hue={0} openedAt={getPlaying()?.gameId === recording.id ? new Date(getPlaying().t).toISOString() : null} onClose={() => (recording = null)} onSaved={saved} />{/if}
 
 <style>
-  .segs { display: flex; gap: 3px; margin: 16px 0 20px; }
+  .top { display: flex; justify-content: space-between; align-items: center; }
+  .date { font-size: 14px; font-weight: 600; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .segs { display: flex; gap: 3px; margin: 14px 0; }
   .seg { flex: 1; height: 8px; border-radius: 4px; background: var(--line); transition: background .3s; }
-  .seg.on { background: hsl(var(--h) 65% 46%); }
+  .seg.on { background: var(--c-fill); }
+  .stats3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-  .card {
-    position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 140px;
-    border-radius: 18px; color: var(--ink); text-align: left; padding: 0; font: inherit; cursor: pointer;
-    background: hsl(var(--h) var(--cs) var(--cl)); border: 2px solid hsl(var(--h) calc(var(--cs) - 15%) var(--bl));
-  }
-  .card.done { padding: 14px; background: hsl(var(--h) 60% 30%); border-color: hsl(var(--h) 60% 30%); color: #fff; }
-  .card.done .ccat { color: rgba(255,255,255,.85); margin-top: 2px; }
-  .cmain { flex: 1; width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 14px; background: none; border: 0; text-align: left; cursor: pointer; color: inherit; }
-  .cem { font-size: 32px; line-height: 1; }
-  .cname { font-weight: 700; font-size: 17px; line-height: 1.2; margin-top: 8px; }
-  .ccat { font-size: 13px; color: var(--muted); }
-  .cres { margin-top: auto; font-size: 28px; font-weight: 720; line-height: 1.05; }
-  .cstate { margin-top: auto; display: inline-flex; align-items: center; height: 34px; padding: 0 16px; border-radius: 999px; background: var(--ink); color: var(--bg); font-weight: 650; font-size: 14px; }
-  .cadd { position: absolute; top: 8px; right: 8px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: hsl(var(--h) var(--cs) var(--bl)); font-size: 22px; font-weight: 600; cursor: pointer; color: inherit; }
-  @media (prefers-reduced-motion: reduce) { .seg { transition: none; } }
+  .card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform .12s ease; }
+  .card:active { transform: scale(.98); }
+  .cmain { width: 100%; display: flex; flex-direction: column; padding: 0; border: 0; background: none; text-align: left; color: inherit; cursor: pointer; }
+  .band { position: relative; display: block; }
+  .badge { position: absolute; left: 12px; bottom: -22px; width: 44px; height: 44px; border-radius: 14px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 2px 6px rgba(21,19,43,.18); }
+  .cbody { padding: 28px 12px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .cname { font-family: var(--display); font-size: 17px; font-weight: 750; line-height: 1.15; }
+  .cinfo { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(0,0,0,.35); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .donelist { display: flex; flex-direction: column; gap: 8px; }
+  .drow { display: flex; align-items: center; gap: 12px; min-height: 62px; padding: 8px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; text-align: left; color: inherit; cursor: pointer; }
+  .dart { position: relative; width: 44px; flex: none; }
+  .demoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; text-shadow: 0 1px 4px rgba(0,0,0,.4); }
+  .drow .name { font-weight: 650; }
+  .drow .small { display: block; }
+  .dres { font-size: 20px; }
+  @media (prefers-reduced-motion: reduce) { .seg, .card { transition: none; } }
 </style>

@@ -2,8 +2,10 @@
   import { onMount } from 'svelte';
   import { loadAllGames, upsertGame, deleteGame, saveOrder, slugify } from '../lib/games.js';
   import { humanError } from '../lib/account.js';
+  import { CATEGORY_NAMES } from '../lib/categories.js';
+  import GameArt from './GameArt.svelte';
 
-  const CATEGORIES = ['Palabras', 'Números', 'Cultura general', 'Geografía', 'Lógica', 'Historia', 'Otros'];
+  const CATEGORIES = CATEGORY_NAMES;
   let games = $state([]);
   let error = $state('');
   let busy = $state(false);
@@ -26,7 +28,7 @@
   }
 
   function startNew() {
-    editing = { id: '', name: '', url: 'https://', emoji: '🎯', category: 'Otros', open_mode: 'embed', better: 'low', max_value: null, active: true, sort: games.length + 1, isNew: true };
+    editing = { id: '', name: '', url: 'https://', image_url: '', emoji: '🎯', category: 'Otros', open_mode: 'embed', better: 'low', max_value: null, active: true, sort: games.length + 1, isNew: true };
     confirmDel = false;
   }
   function startEdit(g) { editing = { ...g, max_value: g.max_value ?? null }; confirmDel = false; }
@@ -37,6 +39,8 @@
     const { isNew, created_at, ...row } = g;
     if (isNew) row.id = slugify(g.name) || 'juego-' + Date.now();
     row.max_value = row.max_value === '' || row.max_value == null ? null : Number(row.max_value);
+    row.image_url = row.image_url?.trim() || null;
+    if (row.image_url && !/^https:\/\//.test(row.image_url)) { error = 'La imagen debe ser un enlace que empiece por https://'; return; }
     run(async () => { await upsertGame(row); editing = null; });
   }
   function remove() {
@@ -75,6 +79,9 @@
           <label class="field" style="width:84px"><span>Icono</span><input bind:value={editing.emoji} maxlength="8" style="text-align:center;font-size:22px" /></label>
         </div>
         <label class="field"><span>Enlace</span><input bind:value={editing.url} inputmode="url" /></label>
+        <label class="field"><span>Imagen (enlace https a una imagen; vacío = dibujo de su categoría)</span><input bind:value={editing.image_url} inputmode="url" placeholder="https://…" /></label>
+        <GameArt game={{ ...editing, image_url: editing.image_url || null }} height={72} rounded />
+        <div style="height:12px"></div>
         <label class="field"><span>Categoría</span>
           <select bind:value={editing.category}>{#each CATEGORIES as c}<option>{c}</option>{/each}</select></label>
         <label class="field"><span>Cómo se abre</span>

@@ -2,8 +2,9 @@
   import { parseShare } from '../lib/parse.js';
   import { saveResult } from '../lib/results.js';
   import { humanError } from '../lib/account.js';
+  import { catStyle } from '../lib/categories.js';
 
-  let { game, hue, openedAt = null, onClose, onSaved } = $props();
+  let { game, hue = 0, openedAt = null, onClose, onSaved } = $props();
 
   const scaled = $derived(game.max_value >= 2 && game.max_value <= 12);
   let typed = $state('');
@@ -49,7 +50,7 @@
 </script>
 
 <div class="sheet" role="presentation" onclick={(e) => e.target === e.currentTarget && onClose()}>
-  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="rs-title" style="--h:{hue}">
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="rs-title" style={catStyle(game.category)}>
     <button class="closex" onclick={onClose} aria-label="Cerrar">✕</button>
     <h2 id="rs-title"><span aria-hidden="true">{game.emoji}</span> ¿Cómo te ha ido en {game.name}?</h2>
     <p class="muted small">{game.better === 'low' ? 'Gana el número más bajo.' : 'Gana el número más alto.'} Solo puedes apuntarlo una vez.</p>

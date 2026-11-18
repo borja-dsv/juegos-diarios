@@ -56,3 +56,36 @@ export function getPlaying() {
 export function clearPlaying() {
   try { localStorage.removeItem(KEY); } catch {}
 }
+
+const COLS = 'id, user_id, game_id, day, value, failed, display, source, created_at, profiles(username)';
+
+// Resultados de todos (visibles para mí) desde un día hasta ayer.
+// Hoy no cuenta en los rankings de periodo: cada uno ve hoy distinto según lo que ha jugado.
+export async function loadResultsBetween(from, toExclusive) {
+  const { data, error } = await supabase.from('results').select(COLS)
+    .gte('day', from).lt('day', toExclusive).limit(10000);
+  if (error) throw error;
+  return data;
+}
+
+// Todos los resultados visibles de un juego.
+export async function loadGameHistory(gameId) {
+  const { data, error } = await supabase.from('results').select(COLS).eq('game_id', gameId).limit(10000);
+  if (error) throw error;
+  return data;
+}
+
+// Días en los que he registrado algo (para la racha).
+export async function loadMyDays(userId) {
+  const { data, error } = await supabase.from('results').select('day').eq('user_id', userId)
+    .order('day', { ascending: false }).limit(2000);
+  if (error) throw error;
+  return [...new Set(data.map((r) => r.day))];
+}
+
+// Resultados de hoy que puedo ver (los de los juegos que ya he jugado).
+export async function loadTodayVisible() {
+  const { data, error } = await supabase.from('results').select(COLS).eq('day', madridToday());
+  if (error) throw error;
+  return data;
+}

@@ -6,6 +6,7 @@
   import Pending from './screens/Pending.svelte';
   import Today from './screens/Today.svelte';
   import Settings from './screens/Settings.svelte';
+  import Ranking from './screens/Ranking.svelte';
 
   // Qué pantalla toca: loading | welcome | pending | rejected | app | error
   let status = $state('loading');
@@ -55,16 +56,13 @@
   {:else if tab === 'ajustes'}
     <Settings {profile} {session} />
   {:else}
-    <main class="page fade-in">
-      <h1>Ranking</h1>
-      <p class="lead">Llega en la fase 4: ranking del día, histórico y palmarés.</p>
-    </main>
+    <Ranking {profile} />
   {/if}
   <nav class="tabs" aria-label="Secciones">
     <div class="in">
-      <button class="tab" aria-current={tab === 'hoy' ? 'page' : undefined} onclick={() => (tab = 'hoy')}><span class="ico" aria-hidden="true">🎲</span>Hoy</button>
-      <button class="tab" aria-current={tab === 'ranking' ? 'page' : undefined} onclick={() => (tab = 'ranking')}><span class="ico" aria-hidden="true">🏆</span>Ranking</button>
-      <button class="tab" aria-current={tab === 'ajustes' ? 'page' : undefined} onclick={() => (tab = 'ajustes')}><span class="ico" aria-hidden="true">⚙️</span>Ajustes</button>
+      <button class="tab" aria-current={tab === 'hoy' ? 'page' : undefined} onclick={() => (tab = 'hoy')}><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"></rect><rect x="14" y="3" width="7" height="7" rx="2"></rect><rect x="3" y="14" width="7" height="7" rx="2"></rect><rect x="14" y="14" width="7" height="7" rx="2"></rect></svg>Hoy</button>
+      <button class="tab" aria-current={tab === 'ranking' ? 'page' : undefined} onclick={() => (tab = 'ranking')}><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"></path></svg>Ranking</button>
+      <button class="tab" aria-current={tab === 'ajustes' ? 'page' : undefined} onclick={() => (tab = 'ajustes')}><svg class="ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Ajustes</button>
     </div>
   </nav>
 {/if}
