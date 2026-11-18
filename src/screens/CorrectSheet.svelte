@@ -3,6 +3,7 @@
   import { correctResult, voidResult } from '../lib/results.js';
   import { humanError } from '../lib/account.js';
   import { catStyle } from '../lib/categories.js';
+  import { famStyleFor } from '../lib/palette.js';
 
   let { game, row, onClose, onDone } = $props();
   const scaled = Number(game.max_value) >= 2 && Number(game.max_value) <= 12;
@@ -33,7 +34,7 @@
 <svelte:window onkeydown={(e) => e.key === 'Escape' && onClose()} />
 
 <div class="sheet" role="presentation" onclick={(e) => e.target === e.currentTarget && onClose()}>
-  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="cs-title" style={catStyle(game.category)}>
+  <div class="panel fam" role="dialog" aria-modal="true" aria-labelledby="cs-title" style="{catStyle(game.category)};{famStyleFor(game.id)}">
     <button class="closex" onclick={onClose} aria-label="Cerrar">✕</button>
     <h2 id="cs-title">Corregir a {row.profiles?.username}</h2>
     <p class="muted small">{game.emoji} {game.name} · ahora tiene <b>{row.display}</b>. El cambio quedará marcado como «corregido» y se avisará en el chat del juego.</p>

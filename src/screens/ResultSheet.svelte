@@ -3,6 +3,7 @@
   import { saveResult } from '../lib/results.js';
   import { humanError } from '../lib/account.js';
   import { catStyle } from '../lib/categories.js';
+  import { famStyleFor } from '../lib/palette.js';
 
   let { game, hue = 0, openedAt = null, onClose, onSaved } = $props();
 
@@ -54,7 +55,7 @@
 <svelte:window onkeydown={(e) => e.key === 'Escape' && onClose()} />
 
 <div class="sheet" role="presentation" onclick={(e) => e.target === e.currentTarget && onClose()}>
-  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="rs-title" style={catStyle(game.category)}>
+  <div class="panel fam" role="dialog" aria-modal="true" aria-labelledby="rs-title" style="{catStyle(game.category)};{famStyleFor(game.id)}">
     <button class="closex" onclick={onClose} aria-label="Cerrar">✕</button>
     <h2 id="rs-title"><span aria-hidden="true">{game.emoji}</span> ¿Cómo te ha ido en {game.name}?</h2>
     <p class="muted small">{game.better === 'low' ? 'Gana el número más bajo.' : 'Gana el número más alto.'} Solo puedes apuntarlo una vez.</p>
@@ -88,7 +89,8 @@
 <style>
   .keys { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
   .key { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--line); background: var(--bg); font-size: 20px; font-weight: 700; cursor: pointer; }
-  .key:active { background: var(--done); color: var(--done-ink); border-color: var(--done); }
+  .key { color: var(--f-soft-fg); background: var(--f-soft-bg); border-color: transparent; }
+  .key:active { background: var(--f-btn-bg); color: var(--f-btn-fg); }
   .key.miss { color: var(--danger); }
   .typed { display: flex; gap: 8px; margin-bottom: 8px; }
   .typed input { flex: 1; min-width: 0; height: 52px; padding: 0 14px; border: 2px solid var(--accent); border-radius: 12px; background: var(--surface); font-size: 22px; font-weight: 700; text-align: center; }

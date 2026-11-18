@@ -5,6 +5,7 @@
   import { madridToday } from '../lib/day.js';
   import { humanError } from '../lib/account.js';
   import { catStyle } from '../lib/categories.js';
+  import { famStyleFor } from '../lib/palette.js';
 
   let { channel, title, me, game = null, onBack = null } = $props();
   let msgs = $state([]);
@@ -44,7 +45,7 @@
   });
 </script>
 
-<div class="chat" class:full={!!onBack} style={game ? catStyle(game.category) : ''}>
+<div class="chat fam" class:full={!!onBack} style={game ? `${catStyle(game.category)};${famStyleFor(game.id)}` : ''}>
   <header>
     {#if onBack}
       <button class="back" onclick={onBack} aria-label="Volver">
@@ -101,13 +102,13 @@
   .msg.mine { align-self: flex-end; align-items: flex-end; }
   .who { font-size: 12px; font-weight: 700; color: var(--muted); }
   .bubble { padding: 10px 14px; border-radius: 18px 18px 18px 6px; background: var(--surface); border: 1px solid var(--line); font-size: 15px; line-height: 1.4; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .mine .bubble { border-radius: 18px 18px 6px 18px; background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .mine .bubble { border-radius: 18px 18px 6px 18px; background: var(--f-btn-bg, var(--accent)); color: var(--f-btn-fg, var(--accent-ink)); border-color: transparent; }
   .time { font-size: 11px; color: var(--muted); }
   form { display: flex; gap: 8px; padding: 10px 12px calc(10px + (var(--full, 0) * 1px)); background: var(--surface); border-top: 1px solid var(--line); }
   .full form { padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
   form label { display: flex; }
   form input { flex: 1; min-width: 0; height: 46px; border-radius: 23px; border: 1px solid var(--line); background: var(--bg); padding: 0 16px; font-size: 16px; }
-  .sendbtn { width: 46px; height: 46px; flex: none; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .sendbtn { width: 46px; height: 46px; flex: none; border-radius: 50%; border: 0; background: var(--f-btn-bg, var(--accent)); color: var(--f-btn-fg, var(--accent-ink)); display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .sendbtn:disabled { opacity: .5; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 </style>

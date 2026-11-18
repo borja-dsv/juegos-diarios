@@ -5,6 +5,7 @@
   import { standings } from '../lib/standings.js';
   import { madridToday } from '../lib/day.js';
   import { catStyle } from '../lib/categories.js';
+  import { famStyleFor } from '../lib/palette.js';
   import { humanError } from '../lib/account.js';
   import GameArt from './GameArt.svelte';
   import Chat from './Chat.svelte';
@@ -35,7 +36,7 @@
 
 <svelte:window onkeydown={(e) => e.key === 'Escape' && !chatOpen && onBack()} />
 
-<div class="screen fade-in" role="dialog" aria-modal="true" aria-label={game.name} style={catStyle(game.category)}>
+<div class="screen fade-in fam" role="dialog" aria-modal="true" aria-label={game.name} style="{catStyle(game.category)};{famStyleFor(game.id)}">
   <header>
     <GameArt {game} height={176} />
     <div class="shade"></div>
@@ -127,7 +128,7 @@
   .ok { color: var(--done); font-weight: 600; }
   .bigmedal { width: 72px; height: 72px; flex-direction: column; font-size: 11px; font-weight: 700; }
   .bigmedal .num { font-size: 26px; line-height: 1; }
-  .chat { background: var(--accent); color: var(--accent-ink); }
+  .chat { background: var(--f-btn-bg); color: var(--f-btn-fg); }
   .head { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; }
   .head h2 { margin: 0; }
   ol.group { padding: 0; }

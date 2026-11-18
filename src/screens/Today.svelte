@@ -5,6 +5,7 @@
   import { streak } from '../lib/standings.js';
   import { madridToday, longDate } from '../lib/day.js';
   import { catStyle } from '../lib/categories.js';
+  import { famStyleFor } from '../lib/palette.js';
   import { humanError } from '../lib/account.js';
   import GameArt from './GameArt.svelte';
   import Player from './Player.svelte';
@@ -89,7 +90,10 @@
     {#each tiers as t (t.tier)}
       <div class="tramo" style="flex:{t.total}">
         <div class="track"><span class="fill t{t.tier}" style="width:{t.total ? (t.done / t.total) * 100 : 0}%"></span></div>
-        <span class="tlabel"><b>T{t.tier}</b> · {t.done}/{t.total}</span>
+        <span class="nums" aria-hidden="true">
+          {#if t.done > 0 && t.done < t.total}<span class="now" style="left:{(t.done / t.total) * 100}%">{t.done}</span>{/if}
+          <span class="lim" class:hit={t.done === t.total}>{t.total}</span>
+        </span>
       </div>
     {/each}
   </div>
@@ -113,18 +117,18 @@
     <h2 class="section"><span>{grp.tier === 1 ? 'Imprescindibles' : 'El resto'}</span><span class="tier">T{grp.tier} · {grp.games.length}</span></h2>
     <ul class="list">
       {#each grp.games as g (g.id)}
-        <li class="row" style={catStyle(g.category)}>
-          <button class="main" onclick={() => play(g)} aria-label="Jugar a {g.name}">
+        <li class="row fam" style="{catStyle(g.category)};{famStyleFor(g.id)}">
+          <button class="main" onclick={() => (viewing = g)} aria-label="Ver {g.name}: ranking y resultado">
             <span class="thumb"><GameArt game={g} height={48} rounded /></span>
             <span class="grow">
               <span class="name">{g.name}</span>
               <span class="sub"><span class="dot"></span>{g.category}</span>
             </span>
-            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
           </button>
-          <button class="note" onclick={() => (viewing = g)} aria-label="Apuntar resultado de {g.name}">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>
+          <button class="play" onclick={() => play(g)} aria-label="Jugar a {g.name}">
+            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.6v8.8L10.4 6z" fill="currentColor"/></svg>Juega
           </button>
+          <button class="podium" onclick={() => (viewing = g)} aria-label="Ranking y apuntar resultado de {g.name}"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="currentColor"/><rect x="8.5" y="9" width="7" height="13" rx="1.6" fill="currentColor"/><rect x="1.5" y="13" width="6.4" height="9" rx="1.6" fill="currentColor" opacity=".7"/><rect x="16.1" y="15.5" width="6.4" height="6.5" rx="1.6" fill="currentColor" opacity=".55"/></svg></button>
         </li>
       {/each}
     </ul>
@@ -134,7 +138,7 @@
     <h2 class="section"><span>Hechos hoy</span><span class="tier">{done.length}</span></h2>
     <ul class="list">
       {#each done as g (g.id)}
-        <li class="row" style={catStyle(g.category)}>
+        <li class="row fam" style="{catStyle(g.category)};{famStyleFor(g.id)}">
           <button class="main" onclick={() => (viewing = g)} aria-label="{g.name}: {mine[g.id].display}. Ver ranking de hoy">
             <span class="thumb"><GameArt game={g} height={48} rounded /></span>
             <span class="grow">
@@ -143,6 +147,7 @@
             </span>
             <span class="res">{mine[g.id].display}</span>
           </button>
+          <button class="podium" onclick={() => (viewing = g)} aria-label="Ranking de hoy de {g.name}"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="currentColor"/><rect x="8.5" y="9" width="7" height="13" rx="1.6" fill="currentColor"/><rect x="1.5" y="13" width="6.4" height="9" rx="1.6" fill="currentColor" opacity=".7"/><rect x="16.1" y="15.5" width="6.4" height="6.5" rx="1.6" fill="currentColor" opacity=".55"/></svg></button>
         </li>
       {/each}
     </ul>
@@ -164,8 +169,10 @@
   /* línea vertical al final de cada tramo: marca dónde acaba cada nivel */
   .tramo::after { content: ''; position: absolute; right: 3px; top: -5px; width: 2px; height: 16px; border-radius: 1px; background: var(--muted); opacity: .5; }
   .track { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
-  .tlabel { font-size: 12px; color: var(--muted); white-space: nowrap; }
-  .tlabel b { color: var(--ink); font-weight: 650; }
+  .nums { position: relative; display: block; height: 16px; font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .now { position: absolute; top: 0; transform: translateX(-50%); color: var(--ink); }
+  .lim { position: absolute; top: 0; right: -6px; transform: translateX(50%); color: var(--muted); }
+  .lim.hit { color: var(--ink); }
   .fill { display: block; height: 100%; border-radius: 3px; background: var(--accent); transition: width .5s ease; }
   .fill.t2, .fill.t3 { background: color-mix(in srgb, var(--accent) 50%, var(--surface-2)); }
   .meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 8px; font-size: 14px; color: var(--muted); }
@@ -182,11 +189,12 @@
   .name { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sub { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
   .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-fill); flex: none; }
-  .chev { color: var(--muted); opacity: .6; flex: none; }
-  .note { width: 44px; height: 44px; margin-right: 8px; flex: none; border: 0; border-radius: 12px; background: transparent; color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .note:active { background: var(--surface-2); }
+  .play { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--f-btn-bg); color: var(--f-btn-fg); font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px color-mix(in srgb, var(--f-btn-bg) 35%, transparent); transition: transform .12s ease; }
+  .play:active { transform: scale(.95); }
+  .podium { flex: none; width: 40px; height: 40px; margin: 0 10px 0 6px; border: 0; border-radius: 12px; background: var(--f-soft-bg); color: var(--f-soft-fg); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .12s ease; }
+  .podium:active { transform: scale(.92); }
   .res { font-family: var(--display); font-size: 17px; font-weight: 700; padding-right: 8px; white-space: nowrap; }
   .thumbsk { display: block; width: 48px; height: 48px; border-radius: 12px; margin: 12px 0 12px 14px; }
   .linesk { display: block; height: 14px; width: 60%; border-radius: 7px; }
-  @media (prefers-reduced-motion: reduce) { .fill, .main { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .fill, .main, .play, .podium { transition: none; } }
 </style>
