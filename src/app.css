@@ -1,10 +1,11 @@
 /* Tokens de diseño (base: artifact "Juegos de hoy"). Claro por defecto, oscuro según el sistema. */
 :root {
-  /* Base de "Mis finanzas" (configurador): gris verdoso claro + azul #1F4E79 */
-  --bg: #EEF0EF; --surface: #FFFFFF; --surface-2: #F3F5F4; --ink: #1D2321; --muted: #5D6763; --line: #D9DFDC;
-  --done: #2C7756; --done-ink: #FFFFFF; --accent: #1F4E79; --accent-ink: #FFFFFF;
+  /* Base de "Gráficas de Mis finanzas": crema cálido + azul noche #22386B */
+  --bg: #F6F2EC; --surface: #FFFDF9; --surface-2: #F4EFE8; --ink: #23201C; --muted: #6D675E; --line: #E6DFD4;
+  --done: #145A37; --done-ink: #FFFFFF; --accent: #22386B; --accent-ink: #FFFFFF; --danger: #8E1C13;
+  --t1: #22386B; --t2: #B07A12;
   --amber: #8A5300; --amber-soft: #FFF0D2; --danger: #8E2626; --gold: #F2C744; --silver: #D7D6D1; --bronze: #DDA16E;
-  --shadow: 0 1px 2px rgba(29,35,33,.06);
+  --shadow: 0 1px 2px rgba(35,32,28,.06);
   --radius: 18px;
   --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
   color-scheme: light;
@@ -12,16 +13,18 @@
 /* Oscuro: si lo eliges en Ajustes, o si el sistema está en oscuro y no has elegido "Claro" */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #101514; --surface: #18201E; --surface-2: #202A27; --ink: #E8EDEB; --muted: #9AA6A1; --line: #2C3633;
-    --done: #62B98D; --done-ink: #0D1412; --accent: #8DB8E0; --accent-ink: #0D1412;
+    --bg: #0E1A1C; --surface: #152427; --surface-2: #1C2E31; --ink: #E6EFEE; --muted: #93A7A5; --line: #29403F;
+    --done: #45A673; --done-ink: #0E1A1C; --accent: #8FA6DB; --accent-ink: #0E1A1C; --danger: #E15A4C;
+    --t1: #8FA6DB; --t2: #E2AD4B;
     --amber: #F0B040; --amber-soft: #33280F; --danger: #E34948;
     --shadow: none;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #101514; --surface: #18201E; --surface-2: #202A27; --ink: #E8EDEB; --muted: #9AA6A1; --line: #2C3633;
-    --done: #62B98D; --done-ink: #0D1412; --accent: #8DB8E0; --accent-ink: #0D1412;
+  --bg: #0E1A1C; --surface: #152427; --surface-2: #1C2E31; --ink: #E6EFEE; --muted: #93A7A5; --line: #29403F;
+    --done: #45A673; --done-ink: #0E1A1C; --accent: #8FA6DB; --accent-ink: #0E1A1C; --danger: #E15A4C;
+    --t1: #8FA6DB; --t2: #E2AD4B;
     --amber: #F0B040; --amber-soft: #33280F; --danger: #E34948;
     --shadow: none;
     color-scheme: dark;
@@ -142,7 +145,7 @@ nav.tabs .in { display: flex; max-width: 560px; margin: 0 auto; }
 /* Familias de color (palette.js): botones con el color de cada juego o, fuera de un juego, uno al azar por visita */
 .fam, :root.fam { --f-btn-bg: var(--f-deep); --f-btn-fg: #FFFFFF; --f-soft-bg: color-mix(in srgb, var(--f-deep) 11%, var(--surface)); --f-soft-fg: var(--f-deep); }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .fam, :root.fam:not([data-theme="light"]) { --f-btn-bg: var(--f-mid); --f-btn-fg: #0D1412; --f-soft-bg: color-mix(in srgb, var(--f-mid) 16%, transparent); --f-soft-fg: var(--f-mid); }
+  :root:not([data-theme="light"]) .fam, :root.fam:not([data-theme="light"]) { --f-btn-bg: var(--f-mid); --f-btn-fg: #0E1A1C; --f-soft-bg: color-mix(in srgb, var(--f-mid) 16%, transparent); --f-soft-fg: var(--f-mid); }
 }
-:root[data-theme="dark"] .fam, :root.fam[data-theme="dark"] { --f-btn-bg: var(--f-mid); --f-btn-fg: #0D1412; --f-soft-bg: color-mix(in srgb, var(--f-mid) 16%, transparent); --f-soft-fg: var(--f-mid); }
+:root[data-theme="dark"] .fam, :root.fam[data-theme="dark"] { --f-btn-bg: var(--f-mid); --f-btn-fg: #0E1A1C; --f-soft-bg: color-mix(in srgb, var(--f-mid) 16%, transparent); --f-soft-fg: var(--f-mid); }
 .btn.primary { background: var(--f-btn-bg, var(--accent)); color: var(--f-btn-fg, var(--accent-ink)); }

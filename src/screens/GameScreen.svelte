@@ -63,7 +63,7 @@
           <span class="small" class:ok={mine.source === 'share'}>{mine.source === 'share' ? 'Verificado con el texto de Compartir' : 'Apuntado a mano'}</span>
         </div>
         {#if myToday?.pos}
-          <div class="bigmedal medal p{myToday.pos}"><span class="num">{myToday.pos}º</span><span>de {todayRows.length}</span></div>
+          <div class="bigmedal medal p{myToday.pos}" aria-label="Puesto {myToday.pos} de {todayRows.length}"><span class="num">{myToday.pos}º</span><span>/{todayRows.length}</span></div>
         {/if}
       </div>
 

@@ -89,6 +89,7 @@
   <div class="bars" role="img" aria-label={tiers.map((t) => `T${t.tier}: ${t.done} de ${t.total}`).join(', ')}>
     {#each tiers as t (t.tier)}
       <div class="tramo" style="flex:{t.total}">
+        <span class="tname t{t.tier}">T{t.tier}</span>
         <div class="track"><span class="fill t{t.tier}" style="width:{t.total ? (t.done / t.total) * 100 : 0}%"></span></div>
         <span class="nums" aria-hidden="true">
           {#if t.done > 0 && t.done < t.total}<span class="now" style="left:{(t.done / t.total) * 100}%">{t.done}</span>{/if}
@@ -126,7 +127,18 @@
             </span>
           </button>
           <button class="play" onclick={() => play(g)} aria-label="Jugar a {g.name}">
-            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.6v8.8L10.4 6z" fill="currentColor"/></svg>Juega
+            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2.2 21.6 7 12 11.8 2.4 7z" fill="#FFFFFF"/>
+              <path d="M2.4 7 12 11.8v10L2.4 17z" fill="#E7E1D6"/>
+              <path d="M21.6 7 12 11.8v10l9.6-4.8z" fill="#CFC7B8"/>
+              <g fill="#23201C">
+                <ellipse cx="12" cy="7" rx="1.5" ry=".9"/>
+                <circle cx="4.9" cy="10.6" r="1.05"/><circle cx="7.2" cy="14.3" r="1.05"/><circle cx="9.5" cy="18" r="1.05"/>
+                <circle cx="15.2" cy="12.4" r="1"/><circle cx="18.6" cy="10.7" r="1"/>
+                <circle cx="15.2" cy="15.6" r="1"/><circle cx="18.6" cy="13.9" r="1"/>
+                <circle cx="15.2" cy="18.8" r="1"/><circle cx="18.6" cy="17.1" r="1"/>
+              </g>
+            </svg>
           </button>
           <button class="podium" onclick={() => (viewing = g)} aria-label="Ranking y apuntar resultado de {g.name}"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="currentColor"/><rect x="8.5" y="9" width="7" height="13" rx="1.6" fill="currentColor"/><rect x="1.5" y="13" width="6.4" height="9" rx="1.6" fill="currentColor" opacity=".7"/><rect x="16.1" y="15.5" width="6.4" height="6.5" rx="1.6" fill="currentColor" opacity=".55"/></svg></button>
         </li>
@@ -143,9 +155,10 @@
             <span class="thumb"><GameArt game={g} height={48} rounded /></span>
             <span class="grow">
               <span class="name">{g.name}</span>
-              <span class="sub">{myPos[g.id]?.pos ? `${myPos[g.id].pos}º de ${myPos[g.id].of}` : 'Apuntado'}{myPos[g.id]?.pos === 1 ? ' · vas ganando' : ''}</span>
+              <span class="sub"><span class="dot"></span>{g.category}</span>
             </span>
             <span class="res">{mine[g.id].display}</span>
+            {#if myPos[g.id]?.pos}<span class="pos" class:first={myPos[g.id].pos === 1} aria-label="Puesto {myPos[g.id].pos} de {myPos[g.id].of}"><b>{myPos[g.id].pos}º</b>/{myPos[g.id].of}</span>{/if}
           </button>
           <button class="podium" onclick={() => (viewing = g)} aria-label="Ranking de hoy de {g.name}"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="currentColor"/><rect x="8.5" y="9" width="7" height="13" rx="1.6" fill="currentColor"/><rect x="1.5" y="13" width="6.4" height="9" rx="1.6" fill="currentColor" opacity=".7"/><rect x="16.1" y="15.5" width="6.4" height="6.5" rx="1.6" fill="currentColor" opacity=".55"/></svg></button>
         </li>
@@ -164,17 +177,19 @@
   .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); color: var(--ink); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
   .hello { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; margin: 10px 0 16px; }
   .bars { display: flex; gap: 0; margin-top: 2px; }
-  .tramo { position: relative; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding-right: 9px; }
+  .tramo { position: relative; min-width: 0; display: flex; flex-direction: column; gap: 5px; padding-right: 9px; }
   .tramo + .tramo { padding-left: 2px; }
   /* línea vertical al final de cada tramo: marca dónde acaba cada nivel */
-  .tramo::after { content: ''; position: absolute; right: 3px; top: -5px; width: 2px; height: 16px; border-radius: 1px; background: var(--muted); opacity: .5; }
-  .track { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+  .tname { align-self: center; font-size: 11px; font-weight: 800; letter-spacing: .06em; }
+  .tname.t1 { color: var(--t1); } .tname.t2, .tname.t3 { color: var(--t2); }
+  .tramo::after { content: ''; position: absolute; right: 3px; top: 18px; width: 2px; height: 16px; border-radius: 1px; background: var(--muted); opacity: .5; }
+  .track { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
   .nums { position: relative; display: block; height: 16px; font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; }
   .now { position: absolute; top: 0; transform: translateX(-50%); color: var(--ink); }
   .lim { position: absolute; top: 0; right: -6px; transform: translateX(50%); color: var(--muted); }
   .lim.hit { color: var(--ink); }
   .fill { display: block; height: 100%; border-radius: 3px; background: var(--accent); transition: width .5s ease; }
-  .fill.t2, .fill.t3 { background: color-mix(in srgb, var(--accent) 50%, var(--surface-2)); }
+  .fill.t1 { background: var(--t1); } .fill.t2, .fill.t3 { background: var(--t2); }
   .meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 8px; font-size: 14px; color: var(--muted); }
   .meta b { color: var(--ink); font-weight: 650; }
   .section { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 4px 10px; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
@@ -189,10 +204,14 @@
   .name { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sub { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
   .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-fill); flex: none; }
-  .play { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--f-btn-bg); color: var(--f-btn-fg); font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px color-mix(in srgb, var(--f-btn-bg) 35%, transparent); transition: transform .12s ease; }
+  .play { flex: none; width: 40px; height: 40px; border: 0; border-radius: 12px; background: var(--f-btn-bg); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px color-mix(in srgb, var(--f-btn-bg) 35%, transparent); transition: transform .12s ease; }
+  .play svg { filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
   .play:active { transform: scale(.95); }
-  .podium { flex: none; width: 40px; height: 40px; margin: 0 10px 0 6px; border: 0; border-radius: 12px; background: var(--f-soft-bg); color: var(--f-soft-fg); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .12s ease; }
+  .podium { flex: none; width: 40px; height: 40px; margin: 0 10px 0 8px; border: 0; border-radius: 12px; background: var(--f-soft-bg); color: var(--f-soft-fg); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .12s ease; }
   .podium:active { transform: scale(.92); }
+  .pos { flex: none; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pos b { font-family: var(--display); font-size: 20px; font-weight: 800; color: var(--ink); }
+  .pos.first b { color: var(--f-soft-fg); }
   .res { font-family: var(--display); font-size: 17px; font-weight: 700; padding-right: 8px; white-space: nowrap; }
   .thumbsk { display: block; width: 48px; height: 48px; border-radius: 12px; margin: 12px 0 12px 14px; }
   .linesk { display: block; height: 14px; width: 60%; border-radius: 7px; }

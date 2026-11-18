@@ -1,6 +1,6 @@
 // Apariencia: 'system' (como el móvil), 'light' o 'dark'. Se recuerda en este dispositivo.
 const KEY = 'jd.theme';
-const COLORS = { light: '#EEF0EF', dark: '#101514' };
+const COLORS = { light: '#F6F2EC', dark: '#0E1A1C' };
 
 export function getTheme() {
   try { return localStorage.getItem(KEY) || 'system'; } catch { return 'system'; }

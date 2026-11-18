@@ -2,15 +2,16 @@
 // - cada familia tiene un tono profundo (modo claro) y uno medio (modo oscuro);
 // - en cada visita cambian de orden y dos seguidos nunca son de la misma familia;
 // - el contraste del texto se garantiza ajustando el tono (4.5:1 como mínimo).
-// Paleta "Joya profunda": zafiro, verde azulado, ocre, ciruela e índigo.
+// Paleta de "Gráficas de Mis finanzas" (Atardecer frío): azul noche, turquesa, ámbar, granate y verde pino.
+// [tono para modo claro, tono para modo oscuro]
 export const FAMILIES = [
-  ['#1d4f91', '#4a80c4'],
-  ['#0f6b6b', '#3a9c96'],
-  ['#a3700c', '#d6a53c'],
-  ['#6b2d5c', '#a65a90'],
-  ['#3b3f8f', '#7276c6']
+  ['#22386b', '#8fa6db'],
+  ['#0b7a75', '#45b0a8'],
+  ['#b07a12', '#e2ad4b'],
+  ['#8a2c3d', '#d77a88'],
+  ['#2e5e3e', '#7fb48d']
 ];
-const INK = '#0d1412'; // texto sobre botones en modo oscuro
+const INK = '#0e1a1c'; // texto sobre botones en modo oscuro (el fondo oscuro de Mis finanzas)
 
 const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
 const hex = (c) => '#' + c.map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('');
