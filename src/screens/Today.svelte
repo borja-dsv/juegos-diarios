@@ -157,8 +157,21 @@
               <span class="name">{g.name}</span>
               <span class="sub"><span class="dot"></span>{g.category}</span>
             </span>
-            <span class="res">{mine[g.id].display}</span>
-            {#if myPos[g.id]?.pos}<span class="pos" class:first={myPos[g.id].pos === 1} aria-label="Puesto {myPos[g.id].pos} de {myPos[g.id].of}"><b>{myPos[g.id].pos}º</b>/{myPos[g.id].of}</span>{/if}
+            <span class="right">
+              <span class="res">{mine[g.id].display}</span>
+              {#if myPos[g.id]?.pos}
+                <span class="posline">
+                  <span class="pos" class:first={myPos[g.id].pos === 1} aria-label="Puesto {myPos[g.id].pos} de {myPos[g.id].of}"><b>{myPos[g.id].pos}º</b>/{myPos[g.id].of}</span>
+                  {#if myPos[g.id].pos <= 3}
+                    <svg class="medal-ico m{myPos[g.id].pos}" width="16" height="20" viewBox="0 0 20 24" aria-hidden="true">
+                      <path d="M5 1h4l2.5 7h-4z" fill="#C0392B"/><path d="M15 1h-4L8.5 8h4z" fill="#2E5A88"/>
+                      <circle cx="10" cy="15" r="7.5" class="disc"/><circle cx="10" cy="15" r="5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>
+                      <text x="10" y="18.2" text-anchor="middle" font-size="8.5" font-weight="800" fill="rgba(0,0,0,.55)">{myPos[g.id].pos}</text>
+                    </svg>
+                  {/if}
+                </span>
+              {/if}
+            </span>
           </button>
           <button class="podium" onclick={() => (viewing = g)} aria-label="Ranking de hoy de {g.name}"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="currentColor"/><rect x="8.5" y="9" width="7" height="13" rx="1.6" fill="currentColor"/><rect x="1.5" y="13" width="6.4" height="9" rx="1.6" fill="currentColor" opacity=".7"/><rect x="16.1" y="15.5" width="6.4" height="6.5" rx="1.6" fill="currentColor" opacity=".55"/></svg></button>
         </li>
@@ -210,7 +223,11 @@
   .podium { flex: none; width: 40px; height: 40px; margin: 0 10px 0 8px; border: 0; border-radius: 12px; background: var(--f-soft-bg); color: var(--f-soft-fg); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .12s ease; }
   .podium:active { transform: scale(.92); }
   .pos { flex: none; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .pos b { font-family: var(--display); font-size: 20px; font-weight: 800; color: var(--ink); }
+  .medal-ico { flex: none; filter: drop-shadow(0 1px 1px rgba(0,0,0,.2)); }
+  .medal-ico.m1 .disc { fill: #E9B93A; } .medal-ico.m2 .disc { fill: #C3C7CE; } .medal-ico.m3 .disc { fill: #C98A55; }
+  .pos b { font-family: var(--display); font-size: 17px; font-weight: 800; color: var(--ink); }
+  .right { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 1px; padding-right: 2px; }
+  .posline { display: flex; align-items: center; gap: 4px; }
   .pos.first b { color: var(--f-soft-fg); }
   .res { font-family: var(--display); font-size: 17px; font-weight: 700; padding-right: 8px; white-space: nowrap; }
   .thumbsk { display: block; width: 48px; height: 48px; border-radius: 12px; margin: 12px 0 12px 14px; }
