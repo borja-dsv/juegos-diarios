@@ -33,7 +33,7 @@
 
   function usePasted(text) {
     const r = parseShare(text, game);
-    if (!r) { error = 'No he sabido leer ese texto. Apunta el número con los botones.'; return; }
+    if (!r || r.error) { error = r?.error || 'No he sabido leer ese texto. Apunta el número con los botones.'; return; }
     save({ value: r.value, failed: r.failed, display: r.display, raw: text.slice(0, 3000), source: r.verified ? 'share' : 'manual' });
   }
   async function pasteFromClipboard() {
