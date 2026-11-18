@@ -1,12 +1,11 @@
 <script>
-  import { register, sendLoginCode, verifyLoginCode, humanError, USERNAME_RE, EMAIL_RE } from '../lib/account.js';
+  import { register, sendLoginLink, humanError, USERNAME_RE, EMAIL_RE } from '../lib/account.js';
 
   let { onDone } = $props();
 
-  let mode = $state('register'); // register | login | code
+  let mode = $state('register'); // register | login | sent
   let username = $state('');
   let email = $state('');
-  let code = $state('');
   let busy = $state(false);
   let error = $state('');
 
@@ -22,13 +21,9 @@
     await register(username.trim(), email.trim().toLowerCase());
     onDone();
   });
-  const doSendCode = () => run(async () => {
-    await sendLoginCode(email.trim().toLowerCase());
-    mode = 'code';
-  });
-  const doVerify = () => run(async () => {
-    await verifyLoginCode(email.trim().toLowerCase(), code.trim());
-    onDone();
+  const doSendLink = () => run(async () => {
+    await sendLoginLink(email.trim().toLowerCase());
+    mode = 'sent';
   });
 </script>
 
@@ -53,26 +48,20 @@
 
   {:else if mode === 'login'}
     <h1>Recupera tu cuenta</h1>
-    <p class="lead">Te enviaremos un código de 6 cifras a tu email.</p>
-    <form onsubmit={(e) => { e.preventDefault(); if (validEmail) doSendCode(); }}>
+    <p class="lead">Te enviaremos un enlace a tu email. Ábrelo en este dispositivo y entrarás.</p>
+    <form onsubmit={(e) => { e.preventDefault(); if (validEmail) doSendLink(); }}>
       <label class="field"><span>Email</span>
         <input bind:value={email} type="email" inputmode="email" autocomplete="email" placeholder="tu@email.com" />
       </label>
       {#if error}<p class="error" role="alert">{error}</p>{/if}
-      <button class="btn primary block" disabled={busy || !validEmail}>{busy ? 'Enviando…' : 'Enviar código'}</button>
+      <button class="btn primary block" disabled={busy || !validEmail}>{busy ? 'Enviando…' : 'Enviar enlace'}</button>
     </form>
     <button class="link" onclick={() => { mode = 'register'; error = ''; }}>Volver</button>
 
   {:else}
     <h1>Mira tu email</h1>
-    <p class="lead">Escribe el código que te hemos enviado a <b>{email}</b>.</p>
-    <form onsubmit={(e) => { e.preventDefault(); doVerify(); }}>
-      <label class="field"><span>Código</span>
-        <input bind:value={code} inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456" />
-      </label>
-      {#if error}<p class="error" role="alert">{error}</p>{/if}
-      <button class="btn primary block" disabled={busy || code.trim().length < 6}>{busy ? 'Comprobando…' : 'Entrar'}</button>
-    </form>
-    <button class="link" onclick={() => { mode = 'login'; code = ''; error = ''; }}>Enviar otro código</button>
+    <p class="lead">Te hemos enviado un enlace a <b>{email}</b>. Ábrelo en este mismo dispositivo para entrar.</p>
+    <div class="note">El email llega en inglés, con el asunto <b>«Your sign-in link»</b>. Pulsa <b>«Sign in»</b>. Si no lo ves, mira en spam.</div>
+    <button class="link" onclick={() => { mode = 'login'; error = ''; }}>Enviar otro enlace</button>
   {/if}
 </main>

@@ -26,18 +26,22 @@ export async function register(username, email) {
   const { error: pErr } = await supabase.from('profiles').insert({ id: session.user.id, username });
   if (pErr) throw pErr;
   // El email se confirma con un enlace. Si falla (p. ej. límite de emails), la cuenta sigue funcionando.
-  const { error: eErr } = await supabase.auth.updateUser({ email });
+  const { error: eErr } = await supabase.auth.updateUser({ email }, { emailRedirectTo: appUrl() });
   return { emailPending: !eErr, emailError: eErr ? humanError(eErr) : null };
 }
 
-// Recuperar la cuenta en otro dispositivo: código de 6 cifras al email.
-export async function sendLoginCode(email) {
-  const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
-  if (error) throw error;
+// Dirección de la app (la misma en local y publicada), adonde vuelven los enlaces del email.
+export function appUrl() {
+  return window.location.origin + import.meta.env.BASE_URL;
 }
 
-export async function verifyLoginCode(email, token) {
-  const { error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
+// Recuperar la cuenta en otro dispositivo: enlace de acceso al email.
+// Al abrirlo, Supabase vuelve a la app con la sesión y supabase-js la recoge sola.
+export async function sendLoginLink(email) {
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: { shouldCreateUser: false, emailRedirectTo: appUrl() }
+  });
   if (error) throw error;
 }
 
