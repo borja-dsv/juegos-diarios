@@ -49,7 +49,7 @@
       {:else if game.id === 'noilirk'}
         <span class="big">👥</span><span class="corner think">💭</span>
       {:else if game.id === 'size-it-up'}
-        <div class="sizes"><span class="small">🐭</span><span class="large">🐘</span></div><i class="ground"></i>
+        <div class="sizes"><span class="large">🐘</span><span class="small">🦚</span></div><i class="ground"></i>
       {:else if game.id === 'flagle'}
         <!-- banderas dibujadas (los emojis de bandera salen como letras en Windows) -->
         <svg class="fill" viewBox="0 0 120 80" preserveAspectRatio="xMidYMid meet">
@@ -119,11 +119,11 @@
   .noilirk .big { font-size: 58cqmin; transform: translateY(10%); }
   .noilirk .think { right: 12%; top: 4%; }
 
-  .size-it-up { background: linear-gradient(#FCEDEA, #F6C9C1); }
-  .sizes { display: flex; align-items: flex-end; gap: 4%; transform: translateY(6%); }
-  .sizes .small { font-size: 30cqmin; }
-  .sizes .large { font-size: 64cqmin; }
-  .ground { position: absolute; left: 12%; right: 12%; bottom: 14%; height: 2px; background: rgba(120,40,30,.35); border-radius: 1px; }
+  .size-it-up { background: linear-gradient(#EAF4F8 0%, #F7EFE2 62%, #E6D3B3 62%, #D9C29C 100%); }
+  .sizes { display: flex; align-items: flex-end; gap: 0; transform: translateY(6%); }
+  .sizes .small { font-size: 27cqmin; }
+  .sizes .large { font-size: 50cqmin; transform: scaleX(-1); }
+  .ground { display: none; }
 
   .flagle { background: #1E2A44; }
   .travle { background: radial-gradient(circle at 50% 30%, #1E3A5C, #0E1E33 75%); }
