@@ -23,6 +23,8 @@
   let viewing = $state(null);       // pantalla de un juego
 
   const pending = $derived(games.filter((g) => !mine[g.id]));
+  // Pendientes agrupados por nivel (T1, T2…), en el orden que ha decidido el admin.
+  const pendingTiers = $derived([...new Set(pending.map((g) => g.tier ?? 2))].sort().map((t) => ({ tier: t, games: pending.filter((g) => (g.tier ?? 2) === t) })));
   const done = $derived(games.filter((g) => mine[g.id]));
   const myStreak = $derived(streak(days, madridToday()));
   // Mi puesto de hoy en cada juego que he jugado.
@@ -99,10 +101,10 @@
     </div>
   {/if}
 
-  {#if pending.length}
-    <h2>Pendientes</h2>
+  {#each pendingTiers as grp (grp.tier)}
+    <h2 class="tierh"><span class="tier t{grp.tier}">T{grp.tier}</span>{grp.tier === 1 ? 'Los imprescindibles' : 'El resto'}<span class="count">{grp.games.length}</span></h2>
     <div class="grid">
-      {#each pending as g (g.id)}
+      {#each grp.games as g (g.id)}
         <div class="card" style={catStyle(g.category)}>
           <button class="cmain" onclick={() => play(g)} aria-label="Jugar a {g.name}">
             <span class="band"><GameArt game={g} height={72} /><span class="badge" aria-hidden="true">{g.emoji}</span></span>
@@ -115,7 +117,7 @@
         </div>
       {/each}
     </div>
-  {/if}
+  {/each}
 
   {#if done.length}
     <h2>Hechos hoy</h2>
@@ -146,6 +148,10 @@
   .seg { flex: 1; height: 8px; border-radius: 4px; background: var(--line); transition: background .3s; }
   .seg.on { background: var(--c-fill); }
   .stats3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .tierh { display: flex; align-items: center; gap: 10px; }
+  .tier { font-family: var(--display); font-size: 13px; font-weight: 800; padding: 3px 8px; border-radius: 8px; background: var(--line); color: var(--ink); }
+  .tier.t1 { background: var(--accent); color: var(--accent-ink); }
+  .count { margin-left: auto; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; color: var(--muted); }
   .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform .12s ease; }
   .card:active { transform: scale(.98); }

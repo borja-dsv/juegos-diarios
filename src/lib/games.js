@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
 
 export async function loadGames() {
-  const { data, error } = await supabase.from('games').select('*').eq('active', true).order('sort');
+  const { data, error } = await supabase.from('games').select('*').eq('active', true).order('tier').order('sort');
   if (error) throw error;
   return data;
 }
@@ -14,7 +14,7 @@ export function hueOf(game, index = 0) {
 }
 
 export async function loadAllGames() {
-  const { data, error } = await supabase.from('games').select('*').order('sort');
+  const { data, error } = await supabase.from('games').select('*').order('tier').order('sort');
   if (error) throw error;
   return data;
 }

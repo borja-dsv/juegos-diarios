@@ -28,7 +28,7 @@
   }
 
   function startNew() {
-    editing = { id: '', name: '', url: 'https://', image_url: '', emoji: '🎯', category: 'Otros', open_mode: 'embed', better: 'low', max_value: null, active: true, sort: games.length + 1, isNew: true };
+    editing = { id: '', name: '', url: 'https://', image_url: '', tier: 2, emoji: '🎯', category: 'Otros', open_mode: 'embed', better: 'low', max_value: null, active: true, sort: games.length + 1, isNew: true };
     confirmDel = false;
   }
   function startEdit(g) { editing = { ...g, max_value: g.max_value ?? null }; confirmDel = false; }
@@ -59,7 +59,7 @@
       <span aria-hidden="true" style="font-size:22px">{g.emoji}</span>
       <button class="grow meta" onclick={() => startEdit(g)}>
         <span class="name">{g.name}</span>
-        <span class="small muted">{g.active ? '' : 'Oculto · '}{g.open_mode === 'embed' ? 'En la app' : 'Navegador'} · gana {g.better === 'low' ? 'menos' : 'más'}</span>
+        <span class="small muted">T{g.tier ?? 2} · {g.active ? '' : 'Oculto · '}{g.open_mode === 'embed' ? 'En la app' : 'Navegador'} · gana {g.better === 'low' ? 'menos' : 'más'}</span>
       </button>
       <button class="btn quiet sm arrow" disabled={busy || i === 0} onclick={() => move(i, -1)} aria-label="Subir {g.name}">↑</button>
       <button class="btn quiet sm arrow" disabled={busy || i === games.length - 1} onclick={() => move(i, 1)} aria-label="Bajar {g.name}">↓</button>
@@ -82,6 +82,11 @@
         <label class="field"><span>Imagen (enlace https a una imagen; vacío = dibujo de su categoría)</span><input bind:value={editing.image_url} inputmode="url" placeholder="https://…" /></label>
         <GameArt game={{ ...editing, image_url: editing.image_url || null }} height={72} rounded />
         <div style="height:12px"></div>
+        <label class="field"><span>Nivel</span>
+          <select bind:value={editing.tier}>
+            <option value={1}>T1 · Los imprescindibles</option>
+            <option value={2}>T2 · El resto</option>
+          </select></label>
         <label class="field"><span>Categoría</span>
           <select bind:value={editing.category}>{#each CATEGORIES as c}<option>{c}</option>{/each}</select></label>
         <label class="field"><span>Cómo se abre</span>
