@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { loadPlayers, setStatus, setAdmin } from '../lib/admin.js';
   import { humanError } from '../lib/account.js';
+  import GamesAdmin from './GamesAdmin.svelte';
 
   let { profile, session } = $props();
   let players = $state([]);
@@ -55,6 +56,8 @@
     {:else}
       <p class="muted">No hay nadie esperando.</p>
     {/if}
+
+    <GamesAdmin />
 
     <h2>Jugadores ({members.length})</h2>
     <ul class="group">
