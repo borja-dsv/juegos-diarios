@@ -65,6 +65,52 @@ Medidas:
 - **Chat:** uno general del grupo y uno por juego (desbloqueado al jugar).
 - **Ajustes:** cuenta, invitaciones y gestión de juegos (admins).
 
+## 6b. Flujos detallados (18-nov-2026)
+
+**Base de diseño:** el artifact "Juegos de hoy" de Borja (tarjetas de color por juego con
+emoji, teclado de números para registrar, "Hecho, sin resultado", deshacer). Tipografía
+Bricolage Grotesque, modo claro y oscuro.
+
+### Flujo 1 · Entrar por primera vez
+1. Un admin comparte el enlace de la app.
+2. La persona escribe un nombre de usuario y su email → queda "pendiente de aprobación".
+3. Los admins ven la solicitud y aprueban o rechazan.
+4. Al aprobarla, entra. El dispositivo la recuerda para siempre.
+5. Si pierde el móvil o entra desde otro dispositivo: "Entrar con mi email" → enlace al correo.
+
+### Flujo 2 · Jugar y registrar
+1. Abre la app → pantalla Hoy con tarjetas (pendientes arriba, hechos abajo).
+2. Toca un juego → se abre (dentro de la app o en el navegador integrado).
+   La app apunta la hora en que lo abrió.
+3. Al volver, la app detecta que venías de ese juego y **abre sola la hoja de registro**.
+4. Registro, de menos a más esfuerzo:
+   - **Compartir del juego → elegir "Juegos diarios"** (Android): se registra solo.
+   - Si el botón del juego copia el texto en el portapapeles: al volver, la app lo lee y
+     solo tienes que confirmar (hay que comprobar en el móvil el permiso de Chrome).
+   - **Teclado de números** como en el artifact (por ejemplo 1-5 y ✕, o un número libre).
+5. Tras registrar se desbloquean el ranking de hoy y el chat de ese juego.
+
+**"Leer la pantalla sola" no es posible:** el navegador prohíbe a una web leer lo que
+muestra otra web (es una protección de seguridad). Las alternativas de arriba son lo más
+cercano. Una captura de pantalla con lectura automática se deja como posible mejora futura
+(más pasos y más errores que compartir el texto).
+
+**"Asegurar que has jugado":**
+- Las entradas con texto de Compartir llevan el sello "verificado" (con el número de
+  partida de hoy).
+- Las entradas manuales llevan la marca "manual".
+- Se guarda el tiempo entre abrir el juego y registrar el resultado.
+- Lo demás, según el apartado 4.
+
+### Flujo 3 · Rankings
+- **Diario:** por juego, quién quedó primero, segundo… hoy (empates comparten puesto).
+- **Histórico:** por juego, la posición de cada jugador día a día.
+- **Global:** victorias por juego y jugador, más una tabla general con el total de victorias.
+
+### Flujo 4 · Chats
+- **General del grupo** + **uno por juego** (visible tras jugar ese día).
+- Mensajes automáticos de la app: "Ana ha registrado Worldle: 3/6", "Hoy gana Luis el Globle".
+
 ## 7. Arquitectura
 
 - **Frontend:** Vite + Svelte, PWA instalable, modo claro y oscuro.
