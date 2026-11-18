@@ -5,7 +5,9 @@
   import { streak } from '../lib/standings.js';
   import { madridToday, longDate } from '../lib/day.js';
   import { catStyle } from '../lib/categories.js';
-  import { famStyleFor } from '../lib/palette.js';
+  import { famStyleFor, famStyleAt } from '../lib/palette.js';
+  // Colores de la barra: dos familias seguidas (nunca iguales), al azar en cada visita, como los botones.
+  const barBase = Math.floor(Math.random() * 5);
   import { humanError } from '../lib/account.js';
   import GameArt from './GameArt.svelte';
   import Player from './Player.svelte';
@@ -87,10 +89,10 @@
   <h1 class="hello">{!games.length ? `Hola, ${profile.username}` : pending.length ? `Te ${pending.length === 1 ? 'queda 1 juego' : `quedan ${pending.length} juegos`}` : 'Todo hecho por hoy'}</h1>
 
   <div class="bars" role="img" aria-label={tiers.map((t) => `T${t.tier}: ${t.done} de ${t.total}`).join(', ')}>
-    {#each tiers as t (t.tier)}
-      <div class="tramo" style="flex:{t.total}">
+    {#each tiers as t, i (t.tier)}
+      <div class="tramo fam" style="flex:{t.total};{famStyleAt(barBase + i)}">
         <span class="tname t{t.tier}">T{t.tier}</span>
-        <div class="track"><span class="fill t{t.tier}" style="width:{t.total ? (t.done / t.total) * 100 : 0}%"></span></div>
+        <div class="track"><span class="fill" style="width:{t.total ? (t.done / t.total) * 100 : 0}%"></span></div>
         <span class="nums" aria-hidden="true">
           {#if t.done > 0 && t.done < t.total}<span class="now" style="left:{(t.done / t.total) * 100}%">{t.done}</span>{/if}
           <span class="lim" class:hit={t.done === t.total}>{t.total}</span>
@@ -166,7 +168,7 @@
                     <svg class="medal-ico m{myPos[g.id].pos}" width="16" height="20" viewBox="0 0 20 24" aria-hidden="true">
                       <path d="M5 1h4l2.5 7h-4z" fill="#C0392B"/><path d="M15 1h-4L8.5 8h4z" fill="#2E5A88"/>
                       <circle cx="10" cy="15" r="7.5" class="disc"/><circle cx="10" cy="15" r="5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>
-                      <text x="10" y="18.2" text-anchor="middle" font-size="8.5" font-weight="800" fill="rgba(0,0,0,.55)">{myPos[g.id].pos}</text>
+                      <text x="10" y="18.2" text-anchor="middle" font-size="8.5" font-weight="800" class="num-m">{myPos[g.id].pos}</text>
                     </svg>
                   {/if}
                 </span>
@@ -194,7 +196,7 @@
   .tramo + .tramo { padding-left: 2px; }
   /* línea vertical al final de cada tramo: marca dónde acaba cada nivel */
   .tname { align-self: center; font-size: 11px; font-weight: 800; letter-spacing: .06em; }
-  .tname.t1 { color: var(--t1); } .tname.t2, .tname.t3 { color: var(--t2); }
+  .tname { color: var(--f-soft-fg); }
   .tramo::after { content: ''; position: absolute; right: 3px; top: 18px; width: 2px; height: 16px; border-radius: 1px; background: var(--muted); opacity: .5; }
   .track { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
   .nums { position: relative; display: block; height: 16px; font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; }
@@ -202,7 +204,7 @@
   .lim { position: absolute; top: 0; right: -6px; transform: translateX(50%); color: var(--muted); }
   .lim.hit { color: var(--ink); }
   .fill { display: block; height: 100%; border-radius: 3px; background: var(--accent); transition: width .5s ease; }
-  .fill.t1 { background: var(--t1); } .fill.t2, .fill.t3 { background: var(--t2); }
+  .fill { background: var(--f-btn-bg); }
   .meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 8px; font-size: 14px; color: var(--muted); }
   .meta b { color: var(--ink); font-weight: 650; }
   .section { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 4px 10px; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
@@ -225,6 +227,7 @@
   .pos { flex: none; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .medal-ico { flex: none; filter: drop-shadow(0 1px 1px rgba(0,0,0,.2)); }
   .medal-ico.m1 .disc { fill: #E9B93A; } .medal-ico.m2 .disc { fill: #C3C7CE; } .medal-ico.m3 .disc { fill: #C98A55; }
+  .medal-ico.m1 .num-m { fill: #CC9A22; } .medal-ico.m2 .num-m { fill: #A6ABB3; } .medal-ico.m3 .num-m { fill: #AD6F3E; }
   .pos b { font-family: var(--display); font-size: 17px; font-weight: 800; color: var(--ink); }
   .right { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 1px; padding-right: 2px; }
   .posline { display: flex; align-items: center; gap: 4px; }
