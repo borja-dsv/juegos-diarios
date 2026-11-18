@@ -3,11 +3,15 @@
   import { loadPlayers, setStatus, setAdmin } from '../lib/admin.js';
   import { humanError } from '../lib/account.js';
   import GamesAdmin from './GamesAdmin.svelte';
+  import { getTheme, setTheme } from '../lib/theme.js';
 
   let { profile, session } = $props();
   let players = $state([]);
   let error = $state('');
   let busyId = $state(null);
+  let theme = $state(getTheme());
+  const THEMES = [['system', 'Sistema'], ['light', 'Claro'], ['dark', 'Oscuro']];
+  function pickTheme(t) { theme = t; setTheme(t); }
 
   const user = $derived(session?.user);
   const emailOk = $derived(!!user?.email);
@@ -38,6 +42,14 @@
     </li>
   </ul>
   {#if !emailOk}<p class="small muted">Mientras no confirmes tu email, si borras los datos del navegador perderás la cuenta.</p>{/if}
+
+  <h2>Apariencia</h2>
+  <div class="themes" role="radiogroup" aria-label="Apariencia">
+    {#each THEMES as [id, label]}
+      <button role="radio" aria-checked={theme === id} onclick={() => pickTheme(id)}>{label}</button>
+    {/each}
+  </div>
+  <p class="small muted">«Sistema» sigue el modo claro u oscuro de tu móvil.</p>
 
   {#if profile.is_admin}
     {#if error}<p class="error" role="alert">{error}</p>{/if}
@@ -72,3 +84,9 @@
     </ul>
   {/if}
 </main>
+
+<style>
+  .themes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--line); border-radius: 12px; padding: 3px; height: 44px; }
+  .themes button { border: 0; border-radius: 9px; background: transparent; color: var(--muted); font-weight: 600; font-size: 14px; cursor: pointer; }
+  .themes button[aria-checked='true'] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 3px rgba(11,11,11,.12); }
+</style>

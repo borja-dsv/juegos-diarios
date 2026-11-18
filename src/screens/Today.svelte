@@ -151,7 +151,7 @@
   .card:active { transform: scale(.98); }
   .cmain { width: 100%; display: flex; flex-direction: column; padding: 0; border: 0; background: none; text-align: left; color: inherit; cursor: pointer; }
   .band { position: relative; display: block; }
-  .badge { position: absolute; left: 12px; bottom: -22px; width: 44px; height: 44px; border-radius: 14px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 2px 6px rgba(21,19,43,.18); }
+  .badge { position: absolute; left: 12px; bottom: -22px; width: 44px; height: 44px; border-radius: 14px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 2px 6px rgba(11,11,11,.18); }
   .cbody { padding: 28px 12px 52px; display: flex; flex-direction: column; gap: 6px; }
   .cname { font-family: var(--display); font-size: 17px; font-weight: 750; line-height: 1.15; }
   .cinfo { position: absolute; right: 10px; bottom: 10px; height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-size: 13px; font-weight: 650; cursor: pointer; }

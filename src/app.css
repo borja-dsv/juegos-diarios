@@ -1,21 +1,30 @@
 /* Tokens de diseño (base: artifact "Juegos de hoy"). Claro por defecto, oscuro según el sistema. */
 :root {
-  --bg: #F5F4FA; --surface: #FFFFFF; --ink: #15132B; --muted: #5E5B76; --line: #E3E1EE;
-  --done: #0A855C; --done-ink: #FFFFFF; --accent: #5A3FE0; --accent-ink: #FFFFFF;
-  --amber: #A66300; --amber-soft: #FFF0D2; --danger: #BF3348; --gold: #F4C542; --silver: #D9DBE4; --bronze: #E3A673;
-  --shadow: 0 1px 2px rgba(21,19,43,.06);
+  /* Paleta de "Mis finanzas": neutros cálidos + azul #2F5D8A */
+  --bg: #F9F9F7; --surface: #FFFFFF; --surface-2: #F3F2EE; --ink: #0B0B0B; --muted: #52514E; --line: rgba(11,11,11,.10);
+  --done: #006300; --done-ink: #FFFFFF; --accent: #2F5D8A; --accent-ink: #FFFFFF;
+  --amber: #8A5300; --amber-soft: #FFF0D2; --danger: #8E2626; --gold: #F2C744; --silver: #D7D6D1; --bronze: #DDA16E;
+  --shadow: 0 1px 2px rgba(11,11,11,.05);
   --radius: 18px;
   --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
   color-scheme: light;
 }
+/* Oscuro: si lo eliges en Ajustes, o si el sistema está en oscuro y no has elegido "Claro" */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0D0C18; --surface: #17152A; --ink: #EEEDF7; --muted: #A09DB8; --line: #29263F;
-    --done: #1FAE7C; --done-ink: #04170F; --accent: #A996FF; --accent-ink: #0D0C18;
-    --amber: #F0B040; --amber-soft: #33280F; --danger: #F0818F;
+  :root:not([data-theme="light"]) {
+    --bg: #0B0B0B; --surface: #1A1A19; --surface-2: #151515; --ink: #F0EFEC; --muted: #C3C2B7; --line: rgba(240,239,236,.12);
+    --done: #3FBF5A; --done-ink: #04170A; --accent: #8DB3DB; --accent-ink: #0B0B0B;
+    --amber: #F0B040; --amber-soft: #33280F; --danger: #E34948;
     --shadow: none;
     color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #0B0B0B; --surface: #1A1A19; --surface-2: #151515; --ink: #F0EFEC; --muted: #C3C2B7; --line: rgba(240,239,236,.12);
+    --done: #3FBF5A; --done-ink: #04170A; --accent: #8DB3DB; --accent-ink: #0B0B0B;
+    --amber: #F0B040; --amber-soft: #33280F; --danger: #E34948;
+    --shadow: none;
+    color-scheme: dark;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -120,7 +129,8 @@ nav.tabs .in { display: flex; max-width: 560px; margin: 0 auto; }
 
 /* Chip de categoría */
 .catchip { align-self: flex-start; font-size: 12px; font-weight: 700; color: var(--c-deep); background: var(--c-tint); padding: 3px 8px; border-radius: 8px; }
-@media (prefers-color-scheme: dark) { .catchip { color: var(--c-fill); background: color-mix(in srgb, var(--c-fill) 16%, transparent); } }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .catchip { color: var(--c-fill); background: color-mix(in srgb, var(--c-fill) 16%, transparent); } }
+:root[data-theme="dark"] .catchip { color: var(--c-fill); background: color-mix(in srgb, var(--c-fill) 16%, transparent); }
 .num { font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .medal { width: 30px; height: 30px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; background: var(--line); color: var(--ink); }
 .medal.p1 { background: var(--gold); color: #3A2A00; } .medal.p2 { background: var(--silver); color: #22242C; } .medal.p3 { background: var(--bronze); color: #2E1600; }

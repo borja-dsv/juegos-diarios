@@ -84,7 +84,7 @@
 <style>
   .seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--line); border-radius: 12px; padding: 3px; height: 44px; margin: 16px 0 12px; }
   .seg button { border: 0; border-radius: 9px; background: transparent; color: var(--muted); font-weight: 600; font-size: 14px; cursor: pointer; }
-  .seg button[aria-pressed='true'] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 3px rgba(21,19,43,.12); }
+  .seg button[aria-pressed='true'] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 3px rgba(11,11,11,.12); }
   .chips { display: flex; gap: 8px; overflow-x: auto; margin: 0 -16px 8px; padding: 2px 16px 6px; scrollbar-width: none; }
   .chips::-webkit-scrollbar { display: none; }
   .chips button { flex: none; height: 38px; padding: 0 14px; border-radius: 19px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-size: 14px; white-space: nowrap; cursor: pointer; }
