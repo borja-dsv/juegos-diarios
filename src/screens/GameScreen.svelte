@@ -8,12 +8,14 @@
   import { humanError } from '../lib/account.js';
   import GameArt from './GameArt.svelte';
   import Chat from './Chat.svelte';
+  import CorrectSheet from './CorrectSheet.svelte';
 
-  let { game, me, mine = null, onBack, onPlay, onRecord } = $props();
+  let { game, me, isAdmin = false, mine = null, onBack, onPlay, onRecord } = $props();
   let history = $state([]);
   let error = $state('');
   let loaded = $state(false);
   let chatOpen = $state(false);
+  let correcting = $state(null);   // resultado que un admin está corrigiendo
 
   const today = madridToday();
   const todayRows = $derived(rank(history.filter((r) => r.day === today), game.better));
@@ -24,10 +26,11 @@
   const avg = $derived(myPast.length ? myPast.reduce((s, r) => s + Number(r.value), 0) / myPast.length : null);
   const fmt = (n) => (n == null ? '—' : String(Math.round(n * 100) / 100).replace('.', ','));
 
-  onMount(async () => {
+  async function reload() {
     try { history = await loadGameHistory(game.id); } catch (e) { error = humanError(e); }
     loaded = true;
-  });
+  }
+  onMount(reload);
 </script>
 
 <svelte:window onkeydown={(e) => e.key === 'Escape' && !chatOpen && onBack()} />
@@ -73,8 +76,9 @@
         {#each todayRows as r (r.id)}
           <li class="row" class:me={r.user_id === me}>
             <span class="medal {r.pos ? 'p' + r.pos : ''}">{r.pos ?? '—'}</span>
-            <span class="grow"><span class="name">{r.profiles?.username}{r.user_id === me ? ' (tú)' : ''}</span><span class="small muted">{r.source === 'share' ? 'verificado' : 'manual'}</span></span>
+            <span class="grow"><span class="name">{r.profiles?.username}{r.user_id === me ? ' (tú)' : ''}</span><span class="small muted" class:fixed={r.corrected_by}>{r.corrected_by ? 'corregido por admin' : r.source === 'share' ? 'verificado' : 'manual'}</span></span>
             <span class="num res">{r.display}</span>
+            {#if isAdmin}<button class="fix" onclick={() => (correcting = r)} aria-label="Corregir el resultado de {r.profiles?.username}">Corregir</button>{/if}
           </li>
         {/each}
       </ol>
@@ -103,6 +107,7 @@
   </main>
 </div>
 
+{#if correcting}<CorrectSheet {game} row={correcting} onClose={() => (correcting = null)} onDone={() => { correcting = null; reload(); }} />{/if}
 {#if chatOpen}<Chat channel={game.id} title={`Chat de ${game.name}`} {me} {game} onBack={() => (chatOpen = false)} />{/if}
 
 <style>
@@ -128,5 +133,7 @@
   ol.group { padding: 0; }
   .me { background: color-mix(in srgb, var(--accent) 12%, transparent); }
   .res { font-size: 19px; }
+  .fix { height: 32px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 12px; font-weight: 650; cursor: pointer; flex: none; }
+  .fixed { color: var(--amber); font-weight: 600; }
   .stats3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 </style>

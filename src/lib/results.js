@@ -57,7 +57,7 @@ export function clearPlaying() {
   try { localStorage.removeItem(KEY); } catch {}
 }
 
-const COLS = 'id, user_id, game_id, day, value, failed, display, source, created_at, profiles!results_user_id_fkey(username)';
+const COLS = 'id, user_id, game_id, day, value, failed, display, source, created_at, corrected_by, profiles!results_user_id_fkey(username)';
 
 // Resultados de todos (visibles para mí) desde un día hasta ayer.
 // Hoy no cuenta en los rankings de periodo: cada uno ve hoy distinto según lo que ha jugado.
@@ -95,4 +95,14 @@ export async function loadStandings(from, gameId = null, tier = null) {
   const { data, error } = await supabase.rpc('standings', { p_from: from, p_game: gameId, p_tier: tier });
   if (error) throw error;
   return data;
+}
+
+// Admins: corregir o anular un resultado. La base de datos apunta quién lo corrigió y lo avisa en el chat.
+export async function correctResult(id, { value, failed, display }) {
+  const { error } = await supabase.from('results').update({ value, failed, display }).eq('id', id);
+  if (error) throw error;
+}
+export async function voidResult(id) {
+  const { error } = await supabase.from('results').delete().eq('id', id);
+  if (error) throw error;
 }
