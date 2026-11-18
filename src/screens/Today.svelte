@@ -78,61 +78,64 @@
     <span class="muted date">{longDate()}</span>
     <span class="avatar" aria-label="Tu perfil: {profile.username}">{profile.username.charAt(0).toUpperCase()}</span>
   </div>
-  <h1>{!games.length ? `Hola, ${profile.username}` : pending.length ? `Te ${pending.length === 1 ? 'queda 1 juego' : `quedan ${pending.length} juegos`}` : 'Todo hecho por hoy'}</h1>
-  <p class="muted" style="margin:4px 0 0">{done.length} de {games.length} hechos</p>
+  <h1 class="hello">{!games.length ? `Hola, ${profile.username}` : pending.length ? `Te ${pending.length === 1 ? 'queda 1 juego' : `quedan ${pending.length} juegos`}` : 'Todo hecho por hoy'}</h1>
 
-  <div class="segs" aria-hidden="true">
-    {#each games as g (g.id)}<span class="seg" class:on={mine[g.id]} style={catStyle(g.category)}></span>{/each}
+  <div class="progress" role="progressbar" aria-label="Juegos hechos hoy" aria-valuemin="0" aria-valuemax={games.length} aria-valuenow={done.length}>
+    <span class="fill" style="width:{games.length ? (done.length / games.length) * 100 : 0}%"></span>
   </div>
-
-  <div class="stats3">
-    <div class="stat"><span class="k">Racha</span><span class="v">{myStreak} <small>{myStreak === 1 ? 'día' : 'días'}</small></span></div>
-    <div class="stat"><span class="k">Hechos hoy</span><span class="v">{done.length}<small>/{games.length}</small></span></div>
-    <div class="stat"><span class="k">Ganas hoy</span><span class="v">{winsToday}</span></div>
-  </div>
+  <p class="meta">
+    <span><b>{done.length}</b> de {games.length} hechos</span>
+    <span aria-hidden="true">·</span>
+    <span>Racha <b>{myStreak}</b> {myStreak === 1 ? 'día' : 'días'}</span>
+    {#if winsToday}<span aria-hidden="true">·</span><span>Ganas <b>{winsToday}</b></span>{/if}
+  </p>
 
   {#if error}<p class="error">{error}</p>{/if}
   {#if loaded && !games.length && !error}<p class="lead">Aún no hay juegos. Un admin puede añadirlos en Ajustes.</p>{/if}
 
   {#if !loaded}
-    <h2>Pendientes</h2>
-    <div class="grid" aria-busy="true" aria-label="Cargando juegos">
-      {#each [1, 2, 3, 4] as i (i)}<div class="skeleton" style="height:168px"></div>{/each}
+    <div class="list" aria-busy="true" aria-label="Cargando juegos">
+      {#each [1, 2, 3, 4, 5] as i (i)}<div class="row"><span class="skeleton thumbsk"></span><span class="grow"><span class="skeleton linesk"></span></span></div>{/each}
     </div>
   {/if}
 
   {#each pendingTiers as grp (grp.tier)}
-    <h2 class="tierh"><span class="tier t{grp.tier}">T{grp.tier}</span>{grp.tier === 1 ? 'Los imprescindibles' : 'El resto'}<span class="count">{grp.games.length}</span></h2>
-    <div class="grid">
+    <h2 class="section"><span>{grp.tier === 1 ? 'Imprescindibles' : 'El resto'}</span><span class="tier">T{grp.tier} · {grp.games.length}</span></h2>
+    <ul class="list">
       {#each grp.games as g (g.id)}
-        <div class="card" style={catStyle(g.category)}>
-          <button class="cmain" onclick={() => play(g)} aria-label="Jugar a {g.name}">
-            <span class="band"><GameArt game={g} height={72} /><span class="badge" aria-hidden="true">{g.emoji}</span></span>
-            <span class="cbody">
-              <span class="cname">{g.name}</span>
-              <span class="catchip">{g.category}</span>
+        <li class="row" style={catStyle(g.category)}>
+          <button class="main" onclick={() => play(g)} aria-label="Jugar a {g.name}">
+            <span class="thumb"><GameArt game={g} height={48} rounded /></span>
+            <span class="grow">
+              <span class="name">{g.name}</span>
+              <span class="sub"><span class="dot"></span>{g.category}</span>
             </span>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
           </button>
-          <button class="cinfo" onclick={() => (viewing = g)} aria-label="Ver {g.name}: apuntar resultado y estadísticas">Apuntar</button>
-        </div>
+          <button class="note" onclick={() => (viewing = g)} aria-label="Apuntar resultado de {g.name}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>
+          </button>
+        </li>
       {/each}
-    </div>
+    </ul>
   {/each}
 
   {#if done.length}
-    <h2>Hechos hoy</h2>
-    <div class="donelist">
+    <h2 class="section"><span>Hechos hoy</span><span class="tier">{done.length}</span></h2>
+    <ul class="list">
       {#each done as g (g.id)}
-        <button class="drow" onclick={() => (viewing = g)} style={catStyle(g.category)}>
-          <span class="dart"><GameArt game={g} height={44} rounded /><span class="demoji" aria-hidden="true">{g.emoji}</span></span>
-          <span class="grow">
-            <span class="name">{g.name}</span>
-            <span class="small muted">{myPos[g.id]?.pos ? `${myPos[g.id].pos}º de ${myPos[g.id].of}` : 'Sin puesto'}{myPos[g.id]?.pos === 1 ? ' · ganas hoy' : ''}</span>
-          </span>
-          <span class="num dres">{mine[g.id].display}</span>
-        </button>
+        <li class="row" style={catStyle(g.category)}>
+          <button class="main" onclick={() => (viewing = g)} aria-label="{g.name}: {mine[g.id].display}. Ver ranking de hoy">
+            <span class="thumb"><GameArt game={g} height={48} rounded /></span>
+            <span class="grow">
+              <span class="name">{g.name}</span>
+              <span class="sub">{myPos[g.id]?.pos ? `${myPos[g.id].pos}º de ${myPos[g.id].of}` : 'Apuntado'}{myPos[g.id]?.pos === 1 ? ' · vas ganando' : ''}</span>
+            </span>
+            <span class="res">{mine[g.id].display}</span>
+          </button>
+        </li>
       {/each}
-    </div>
+    </ul>
   {/if}
 </main>
 
@@ -142,33 +145,30 @@
 
 <style>
   .top { display: flex; justify-content: space-between; align-items: center; }
-  .date { font-size: 14px; font-weight: 600; }
-  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 700; }
-  .segs { display: flex; gap: 3px; margin: 14px 0; }
-  .seg { flex: 1; height: 8px; border-radius: 4px; background: var(--line); transition: background .3s; }
-  .seg.on { background: var(--c-fill); }
-  .stats3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  .tierh { display: flex; align-items: center; gap: 10px; }
-  .tier { font-family: var(--display); font-size: 13px; font-weight: 800; padding: 3px 8px; border-radius: 8px; background: var(--line); color: var(--ink); }
-  .tier.t1 { background: var(--accent); color: var(--accent-ink); }
-  .count { margin-left: auto; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; color: var(--muted); }
-  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-  .card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform .12s ease; }
-  .card:active { transform: scale(.98); }
-  .cmain { width: 100%; display: flex; flex-direction: column; padding: 0; border: 0; background: none; text-align: left; color: inherit; cursor: pointer; }
-  .band { position: relative; display: block; }
-  .badge { position: absolute; left: 12px; bottom: -22px; width: 44px; height: 44px; border-radius: 14px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 2px 6px rgba(11,11,11,.18); }
-  .cbody { padding: 28px 12px 52px; display: flex; flex-direction: column; gap: 6px; }
-  .cname { font-family: var(--display); font-size: 17px; font-weight: 750; line-height: 1.15; }
-  .cinfo { position: absolute; right: 10px; bottom: 10px; height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-size: 13px; font-weight: 650; cursor: pointer; }
-  .cinfo::before { content: ''; position: absolute; inset: -6px; }
-  .donelist { display: flex; flex-direction: column; gap: 8px; }
-  .drow { display: flex; align-items: center; gap: 12px; min-height: 62px; padding: 8px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; text-align: left; color: inherit; cursor: pointer; }
-  .dart { position: relative; width: 44px; flex: none; }
-  .demoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; text-shadow: 0 1px 4px rgba(0,0,0,.4); }
-  .drow .grow { flex: 1; min-width: 0; }
-  .drow .name { font-weight: 650; }
-  .drow .small { display: block; }
-  .dres { font-size: 20px; }
-  @media (prefers-reduced-motion: reduce) { .seg, .card { transition: none; } }
+  .date { font-size: 14px; font-weight: 500; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); color: var(--ink); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
+  .hello { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; margin: 10px 0 16px; }
+  .progress { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+  .fill { display: block; height: 100%; border-radius: 3px; background: var(--accent); transition: width .5s ease; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 8px; font-size: 14px; color: var(--muted); }
+  .meta b { color: var(--ink); font-weight: 650; }
+  .section { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 4px 10px; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .tier { font-weight: 500; letter-spacing: 0; text-transform: none; }
+  .list { list-style: none; margin: 0; padding: 0; background: var(--surface); border-radius: 20px; overflow: hidden; }
+  .row { position: relative; display: flex; align-items: center; padding: 0; gap: 0; border-top: 0; }
+  .row + .row::before { content: ''; position: absolute; top: 0; left: 76px; right: 16px; height: 1px; background: var(--line); }
+  .main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 14px; padding: 12px 8px 12px 14px; background: none; border: 0; text-align: left; color: inherit; cursor: pointer; transition: background .15s ease; }
+  .main:active { background: var(--surface-2); }
+  .thumb { width: 48px; flex: none; }
+  .grow { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .name { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sub { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-fill); flex: none; }
+  .chev { color: var(--muted); opacity: .6; flex: none; }
+  .note { width: 44px; height: 44px; margin-right: 8px; flex: none; border: 0; border-radius: 12px; background: transparent; color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .note:active { background: var(--surface-2); }
+  .res { font-family: var(--display); font-size: 17px; font-weight: 700; padding-right: 8px; white-space: nowrap; }
+  .thumbsk { display: block; width: 48px; height: 48px; border-radius: 12px; margin: 12px 0 12px 14px; }
+  .linesk { display: block; height: 14px; width: 60%; border-radius: 7px; }
+  @media (prefers-reduced-motion: reduce) { .fill, .main { transition: none; } }
 </style>

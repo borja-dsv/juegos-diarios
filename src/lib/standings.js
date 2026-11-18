@@ -50,3 +50,15 @@ export function streak(days, today) {
   while (set.has(d.toISOString().slice(0, 10))) { n++; d.setUTCDate(d.getUTCDate() - 1); }
   return n;
 }
+
+// Ordena una tabla {user_id, username, points, wins, played} y le pone puesto (empates = mismo puesto).
+export function placeTable(rows) {
+  const sorted = rows.map((r) => ({ ...r, name: r.username ?? r.name ?? '?' }))
+    .sort((a, b) => b.points - a.points || b.wins - a.wins || a.name.localeCompare(b.name));
+  let pos = 0;
+  return sorted.map((t, i) => {
+    const prev = sorted[i - 1];
+    if (!prev || prev.points !== t.points || prev.wins !== t.wins) pos = i + 1;
+    return { ...t, pos };
+  });
+}

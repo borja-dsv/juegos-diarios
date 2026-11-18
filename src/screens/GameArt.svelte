@@ -37,8 +37,8 @@
   .art { position: relative; overflow: hidden; background: var(--c-pat), var(--c-fill); flex: none; }
   .rounded { border-radius: 12px; }
   img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 4px; background: #121213; }
-  .word span { width: 22%; max-width: 30px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: clamp(10px, 40%, 18px); border-radius: 3px; }
+  .word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 3%; padding: 0 6%; background: #121213; }
+  .word span { flex: 1; max-width: 30px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: clamp(10px, 40%, 18px); border-radius: 3px; }
   .poople { position: absolute; inset: 0; background: conic-gradient(#7B4B2A 25%, #F3EDE4 0 50%, #7B4B2A 0 75%, #F3EDE4 0) 0 0 / 22px 22px; }
   .radar { position: absolute; inset: 0; background: #0D1117; display: flex; align-items: center; justify-content: center; }
   .radar svg { height: 88%; }

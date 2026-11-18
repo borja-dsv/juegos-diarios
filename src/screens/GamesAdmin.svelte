@@ -28,7 +28,7 @@
   }
 
   function startNew() {
-    editing = { id: '', name: '', url: 'https://', image_url: '', tier: 2, emoji: '🎯', category: 'Otros', open_mode: 'embed', better: 'low', max_value: null, active: true, sort: games.length + 1, isNew: true };
+    editing = { id: '', name: '', url: 'https://', image_url: '', tier: 2, min_value: 1, emoji: '🎯', category: 'Otros', open_mode: 'embed', better: 'low', max_value: null, active: true, sort: games.length + 1, isNew: true };
     confirmDel = false;
   }
   function startEdit(g) { editing = { ...g, max_value: g.max_value ?? null }; confirmDel = false; }
@@ -101,6 +101,13 @@
           </select></label>
         <label class="field"><span>Máximo de intentos (hasta 12 salen botones; vacío = número libre)</span>
           <input bind:value={editing.max_value} inputmode="numeric" placeholder="Por ejemplo: 6" /></label>
+        {#if editing.max_value}
+          <label class="field"><span>Botones desde</span>
+            <select bind:value={editing.min_value}>
+              <option value={1}>1 (lo normal: a la primera = 1)</option>
+              <option value={0}>0 (si el juego cuenta «intentos de más» o 0 es posible)</option>
+            </select></label>
+        {/if}
         <label class="check"><input type="checkbox" bind:checked={editing.active} /> Visible para todos</label>
         <div class="actions">
           <button class="btn primary" disabled={busy}>{editing.isNew ? 'Añadir' : 'Guardar'}</button>

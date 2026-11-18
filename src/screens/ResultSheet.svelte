@@ -7,6 +7,8 @@
   let { game, hue = 0, openedAt = null, onClose, onSaved } = $props();
 
   const scaled = $derived(game.max_value >= 2 && game.max_value <= 12);
+  // Botones desde el mínimo del juego (0 o 1) hasta el máximo.
+  const keys = $derived(scaled ? Array.from({ length: Number(game.max_value) - Number(game.min_value ?? 1) + 1 }, (_, i) => i + Number(game.min_value ?? 1)) : []);
   let typed = $state('');
   let pasted = $state('');
   let busy = $state(false);
@@ -66,7 +68,7 @@
     <p class="small muted" style="margin:4px 0 8px">O apúntalo a mano:</p>
     {#if scaled}
       <div class="keys" role="group" aria-label="Resultado">
-        {#each Array.from({ length: game.max_value }, (_, i) => i + 1) as n}
+        {#each keys as n}
           <button class="key" disabled={busy} onclick={() => pick(n)}>{n}</button>
         {/each}
         <button class="key miss" disabled={busy} onclick={fail} aria-label="No lo saqué">✕</button>

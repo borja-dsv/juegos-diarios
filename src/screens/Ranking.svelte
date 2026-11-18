@@ -2,8 +2,8 @@
   // Ranking de semana, mes o siempre: general o por juego. Puntos 3-2-1 por puesto + victorias.
   import { onMount } from 'svelte';
   import { loadGames } from '../lib/games.js';
-  import { loadResultsBetween } from '../lib/results.js';
-  import { standings, periodStart } from '../lib/standings.js';
+  import { loadStandings } from '../lib/results.js';
+  import { placeTable, periodStart } from '../lib/standings.js';
   import { madridToday } from '../lib/day.js';
   import { humanError } from '../lib/account.js';
 
@@ -18,10 +18,7 @@
   let error = $state('');
   let loaded = $state(false);
 
-  const betterOf = (id) => games.find((g) => g.id === id)?.better ?? 'low';
-  const tierOf = (id) => games.find((g) => g.id === id)?.tier ?? 2;
-  const scoped = $derived(gameId ? rows.filter((r) => r.game_id === gameId) : scope === 't1' ? rows.filter((r) => tierOf(r.game_id) === 1) : rows);
-  const table = $derived(standings(scoped, betterOf));
+  const table = $derived(placeTable(rows));
   const podium = $derived([table[1], table[0], table[2]].filter(Boolean));
   const rest = $derived(table.slice(3));
 
@@ -29,7 +26,7 @@
     loaded = false; error = '';
     try {
       if (!games.length) games = await loadGames();
-      rows = await loadResultsBetween(periodStart(period, today), today);
+      rows = await loadStandings(periodStart(period, today), gameId, gameId === null && scope === 't1' ? 1 : null);
     } catch (e) { error = humanError(e); }
     loaded = true;
   }
@@ -47,23 +44,23 @@
   </div>
 
   <div class="chips" role="group" aria-label="Juego">
-    <button aria-pressed={gameId === null} onclick={() => (gameId = null)}>General</button>
+    <button aria-pressed={gameId === null} onclick={() => { gameId = null; load(); }}>General</button>
     {#each games as g (g.id)}
-      <button aria-pressed={gameId === g.id} onclick={() => (gameId = g.id)}>{g.emoji} {g.name}</button>
+      <button aria-pressed={gameId === g.id} onclick={() => { gameId = g.id; load(); }}>{g.emoji} {g.name}</button>
     {/each}
   </div>
 
   {#if gameId === null}
     <div class="scope" role="radiogroup" aria-label="Juegos que cuentan">
-      <button role="radio" aria-checked={scope === 't1'} onclick={() => (scope = 't1')}>Solo T1</button>
-      <button role="radio" aria-checked={scope === 'all'} onclick={() => (scope = 'all')}>Todos los juegos</button>
+      <button role="radio" aria-checked={scope === 't1'} onclick={() => { scope = 't1'; load(); }}>Solo T1</button>
+      <button role="radio" aria-checked={scope === 'all'} onclick={() => { scope = 'all'; load(); }}>Todos los juegos</button>
     </div>
   {/if}
 
   {#if error}<p class="error">{error}</p>{/if}
 
   {#if loaded && !table.length}
-    <p class="lead">Aún no hay resultados en este periodo. El ranking cuenta hasta ayer: lo de hoy entra cuando acaba el día.</p>
+    <p class="lead">Aún no hay resultados en este periodo.</p>
   {:else if loaded}
     <div class="podium" aria-label="Podio">
       {#each podium as p (p.user_id)}
@@ -87,7 +84,7 @@
         {/each}
       </ol>
     {/if}
-    <p class="small muted">{gameId === null ? (scope === 't1' ? 'Cuentan solo los juegos T1. ' : 'Cuentan todos los juegos. ') : ''}Cada juego y día: 1º = 3 pts, 2º = 2 pts, 3º = 1 pt. Los empates comparten puesto y puntos. Cuenta hasta ayer.</p>
+    <p class="small muted">{gameId === null ? (scope === 't1' ? 'Cuentan solo los juegos T1. ' : 'Cuentan todos los juegos. ') : ''}Cada juego y día: 1º = 3 pts, 2º = 2 pts, 3º = 1 pt. Los empates comparten puesto y puntos. Incluye los resultados de hoy.</p>
   {/if}
 </main>
 

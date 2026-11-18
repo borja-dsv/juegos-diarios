@@ -89,3 +89,10 @@ export async function loadTodayVisible() {
   if (error) throw error;
   return data;
 }
+
+// Ranking de un periodo calculado en la base de datos (incluye hoy; solo totales).
+export async function loadStandings(from, gameId = null, tier = null) {
+  const { data, error } = await supabase.rpc('standings', { p_from: from, p_game: gameId, p_tier: tier });
+  if (error) throw error;
+  return data;
+}
