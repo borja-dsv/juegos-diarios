@@ -12,13 +12,16 @@
   const PERIODS = [['week', 'Semana'], ['month', 'Mes'], ['all', 'Siempre']];
   let period = $state('week');
   let gameId = $state(null);          // null = general
+  let scope = $state('t1');           // ranking general: 't1' (solo imprescindibles) o 'all' (todos)
   let games = $state([]);
   let rows = $state([]);
   let error = $state('');
   let loaded = $state(false);
 
   const betterOf = (id) => games.find((g) => g.id === id)?.better ?? 'low';
-  const table = $derived(standings(gameId ? rows.filter((r) => r.game_id === gameId) : rows, betterOf));
+  const tierOf = (id) => games.find((g) => g.id === id)?.tier ?? 2;
+  const scoped = $derived(gameId ? rows.filter((r) => r.game_id === gameId) : scope === 't1' ? rows.filter((r) => tierOf(r.game_id) === 1) : rows);
+  const table = $derived(standings(scoped, betterOf));
   const podium = $derived([table[1], table[0], table[2]].filter(Boolean));
   const rest = $derived(table.slice(3));
 
@@ -50,6 +53,13 @@
     {/each}
   </div>
 
+  {#if gameId === null}
+    <div class="scope" role="radiogroup" aria-label="Juegos que cuentan">
+      <button role="radio" aria-checked={scope === 't1'} onclick={() => (scope = 't1')}>Solo T1</button>
+      <button role="radio" aria-checked={scope === 'all'} onclick={() => (scope = 'all')}>Todos los juegos</button>
+    </div>
+  {/if}
+
   {#if error}<p class="error">{error}</p>{/if}
 
   {#if loaded && !table.length}
@@ -77,7 +87,7 @@
         {/each}
       </ol>
     {/if}
-    <p class="small muted">Cada juego y día: 1º = 3 pts, 2º = 2 pts, 3º = 1 pt. Los empates comparten puesto y puntos. Cuenta hasta ayer.</p>
+    <p class="small muted">{gameId === null ? (scope === 't1' ? 'Cuentan solo los juegos T1. ' : 'Cuentan todos los juegos. ') : ''}Cada juego y día: 1º = 3 pts, 2º = 2 pts, 3º = 1 pt. Los empates comparten puesto y puntos. Cuenta hasta ayer.</p>
   {/if}
 </main>
 
@@ -89,6 +99,9 @@
   .chips::-webkit-scrollbar { display: none; }
   .chips button { flex: none; height: 38px; padding: 0 14px; border-radius: 19px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-size: 14px; white-space: nowrap; cursor: pointer; }
   .chips button[aria-pressed='true'] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .scope { display: flex; gap: 8px; margin: 4px 0 4px; }
+  .scope button { flex: 1; height: 38px; border-radius: 10px; border: 1.5px solid var(--line); background: transparent; color: var(--muted); font-weight: 600; font-size: 14px; cursor: pointer; }
+  .scope button[aria-checked='true'] { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); font-weight: 700; }
   .podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 8px; margin: 18px 0 14px; }
   .pcol { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
   .pav { width: 44px; height: 44px; border-radius: 50%; background: var(--ink); color: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; border: 3px solid var(--line); }
