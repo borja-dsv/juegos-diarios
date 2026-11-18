@@ -106,7 +106,7 @@
   .time { font-size: 11px; color: var(--muted); }
   form { display: flex; gap: 8px; padding: 10px 12px calc(10px + (var(--full, 0) * 1px)); background: var(--surface); border-top: 1px solid var(--line); }
   .full form { padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
-  form label { display: flex; }
+  form label { flex: 1; min-width: 0; display: flex; }
   form input { flex: 1; min-width: 0; height: 46px; border-radius: 23px; border: 1px solid var(--line); background: var(--bg); padding: 0 16px; font-size: 16px; }
   .sendbtn { width: 46px; height: 46px; flex: none; border-radius: 50%; border: 0; background: var(--f-btn-bg, var(--accent)); color: var(--f-btn-fg, var(--accent-ink)); display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .sendbtn:disabled { opacity: .5; }
