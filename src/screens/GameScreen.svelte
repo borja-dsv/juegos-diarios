@@ -7,11 +7,13 @@
   import { catStyle } from '../lib/categories.js';
   import { humanError } from '../lib/account.js';
   import GameArt from './GameArt.svelte';
+  import Chat from './Chat.svelte';
 
   let { game, me, mine = null, onBack, onPlay, onRecord } = $props();
   let history = $state([]);
   let error = $state('');
   let loaded = $state(false);
+  let chatOpen = $state(false);
 
   const today = madridToday();
   const todayRows = $derived(rank(history.filter((r) => r.day === today), game.better));
@@ -59,9 +61,9 @@
         {/if}
       </div>
 
-      <button class="btn block chat" disabled title="Llega en la próxima fase">
+      <button class="btn block chat" onclick={() => (chatOpen = true)}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>
-        Chat de {game.name} · muy pronto
+        Chat de {game.name}
       </button>
 
       <div class="head"><h2>Ranking de hoy</h2><span class="small muted">{todayRows.length} {todayRows.length === 1 ? 'ha jugado' : 'han jugado'}</span></div>
@@ -78,7 +80,7 @@
       <div class="you">
         <div class="grow">
           <span class="lbl">Hoy</span>
-          <span class="small">Aún no lo has jugado. El ranking de hoy y el chat se desbloquean al apuntar tu resultado.</span>
+          <span class="small">Aún no lo has jugado. El ranking de hoy y el chat de {game.name} se desbloquean al apuntar tu resultado.</span>
         </div>
       </div>
       <div class="actions">
@@ -98,6 +100,8 @@
     {/if}
   </main>
 </div>
+
+{#if chatOpen}<Chat channel={game.id} title={`Chat de ${game.name}`} {me} {game} onBack={() => (chatOpen = false)} />{/if}
 
 <style>
   .screen { position: fixed; inset: 0; z-index: 25; background: var(--bg); overflow-y: auto; }
