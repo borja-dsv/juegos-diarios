@@ -51,3 +51,14 @@ export async function adminSendAccessLink(id) {
   });
   if (e2) throw e2;
 }
+
+// Temporada del ranking: desde qué día cuenta. Reiniciar no borra resultados.
+export async function loadSeasonStart() {
+  const { data, error } = await supabase.from('app_settings').select('season_start').eq('id', 1).maybeSingle();
+  if (error) throw error;
+  return data?.season_start ?? '2000-01-01';
+}
+export async function setSeasonStart(day) {
+  const { error } = await supabase.rpc('admin_set_season_start', { p_day: day });
+  if (error) throw error;
+}

@@ -6,6 +6,7 @@
   import { placeTable, periodStart, POINTS } from '../lib/standings.js';
   import { madridToday } from '../lib/day.js';
   import { humanError } from '../lib/account.js';
+  import { loadSeasonStart } from '../lib/admin.js';
 
   let { profile } = $props();
   const today = madridToday();
@@ -15,6 +16,7 @@
   let scope = $state('t1');           // ranking general: 't1' (solo imprescindibles) o 'all' (todos)
   let games = $state([]);
   let rows = $state([]);
+  let season = $state('2000-01-01');
   let visible = $state([]);           // resultados que puedo ver (los de hoy, solo de juegos que ya he jugado)
   let error = $state('');
   let loaded = $state(false);
@@ -46,10 +48,10 @@
   async function load() {
     loaded = false; error = '';
     try {
-      if (!games.length) games = await loadGames();
+      if (!games.length) [games, season] = await Promise.all([loadGames(), loadSeasonStart()]);
       [rows, visible] = await Promise.all([
         loadStandings(periodStart(period, today), gameId, gameId === null && scope === 't1' ? 1 : null),
-        loadResultsBetween(periodStart(period, today), tomorrow)
+        loadResultsBetween(periodStart(period, today) > season ? periodStart(period, today) : season, tomorrow)
       ]);
     } catch (e) { error = humanError(e); }
     loaded = true;
@@ -136,6 +138,7 @@
       </details>
     {/each}
 
+    {#if season > '2000-01-01'}<p class="small muted">Temporada desde el {new Date(season + 'T12:00:00Z').toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}.</p>{/if}
     <p class="small muted">{gameId === null ? (scope === 't1' ? 'Cuentan solo los juegos T1. ' : 'Cuentan todos los juegos. ') : ''}Cada juego y día: 1º = 3 pts, 2º = 2 pts, 3º = 1 pt. Los empates comparten puesto y puntos. Incluye los resultados de hoy.</p>
   {/if}
 </main>

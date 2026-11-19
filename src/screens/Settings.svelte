@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
-  import { loadPlayers, setStatus, setAdmin, loadAutoApprove, setAutoApprove, loadAccounts } from '../lib/admin.js';
+  import { loadPlayers, setStatus, setAdmin, loadAutoApprove, setAutoApprove, loadAccounts, loadSeasonStart, setSeasonStart } from '../lib/admin.js';
+  import { madridToday } from '../lib/day.js';
   import ManageUser from './ManageUser.svelte';
   import { humanError, linkEmail, EMAIL_RE } from '../lib/account.js';
   import GamesAdmin from './GamesAdmin.svelte';
@@ -19,6 +20,10 @@
   }
   let autoApprove = $state(null);   // null = cargando
   let accounts = $state({});
+  let season = $state(null);
+  let confirmReset = $state(false);
+  const FIRST_DAY = '2026-11-18';   // primer día con resultados
+  const fmtDay = (d) => new Date(d + 'T12:00:00Z').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
   let managing = $state(null);
   let theme = $state(getTheme());
   const THEMES = [['system', 'Sistema'], ['light', 'Claro'], ['dark', 'Oscuro']];
@@ -31,7 +36,7 @@
 
   async function reload() {
     if (!profile.is_admin) return;
-    try { [players, autoApprove, accounts] = await Promise.all([loadPlayers(), loadAutoApprove(), loadAccounts()]); } catch (e) { error = humanError(e); }
+    try { [players, autoApprove, accounts, season] = await Promise.all([loadPlayers(), loadAutoApprove(), loadAccounts(), loadSeasonStart()]); } catch (e) { error = humanError(e); }
   }
   async function act(id, fn) {
     busyId = id; error = '';
@@ -91,6 +96,19 @@
       </li>
     </ul>
     {#if autoApprove}<p class="small muted">Comparte el enlace solo con tu grupo, y ciérralo cuando estéis todos.</p>{/if}
+
+    <h2>Ranking</h2>
+    <ul class="group">
+      <li class="row"><span class="grow"><span class="name">Cuenta desde</span><span class="small muted">Los resultados anteriores no se borran: solo dejan de contar.</span></span><b>{season ? fmtDay(season) : '…'}</b></li>
+    </ul>
+    <div class="actions">
+      <button class="btn danger" disabled={busyId === 'season' || season === madridToday()}
+        onclick={() => { if (!confirmReset) { confirmReset = true; return; } confirmReset = false; act('season', () => setSeasonStart(madridToday())); }}>
+        {confirmReset ? 'Pulsa otra vez: el ranking empieza hoy para todos' : 'Reiniciar ranking (empezar hoy)'}</button>
+      {#if season && season > FIRST_DAY}
+        <button class="btn quiet" disabled={busyId === 'season'} onclick={() => act('season', () => setSeasonStart(FIRST_DAY))}>Deshacer: contar desde el principio</button>
+      {/if}
+    </div>
 
     <h2>Solicitudes pendientes</h2>
     {#if pending.length}
