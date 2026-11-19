@@ -10,8 +10,8 @@
 
   let { profile } = $props();
   const today = madridToday();
-  const PERIODS = [['week', 'Semana'], ['month', 'Mes'], ['all', 'Siempre']];
-  let period = $state('week');
+  const PERIODS = [['day', 'Hoy'], ['week', 'Semana'], ['month', 'Mes'], ['all', 'Siempre']];
+  let period = $state('day');
   let gameId = $state(null);          // null = general
   let scope = $state('t1');           // ranking general: 't1' (solo imprescindibles) o 'all' (todos)
   let games = $state([]);
@@ -86,7 +86,7 @@
   {#if error}<p class="error">{error}</p>{/if}
 
   {#if loaded && !table.length}
-    <p class="lead">Aún no hay resultados en este periodo.</p>
+    <p class="lead">{period === 'day' ? 'Hoy aún no ha jugado nadie. ¡Sé el primero!' : 'Aún no hay resultados en este periodo.'}</p>
   {:else if loaded}
     <div class="podium" aria-label="Podio">
       {#each podium as p (p.user_id)}
@@ -144,7 +144,7 @@
 </main>
 
 <style>
-  .seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--line); border-radius: 12px; padding: 3px; height: 44px; margin: 16px 0 12px; }
+  .seg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: var(--line); border-radius: 12px; padding: 3px; height: 44px; margin: 16px 0 12px; }
   .seg button { border: 0; border-radius: 9px; background: transparent; color: var(--muted); font-weight: 600; font-size: 14px; cursor: pointer; }
   .seg button[aria-pressed='true'] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 3px rgba(11,11,11,.12); }
   .chips { display: flex; gap: 8px; overflow-x: auto; margin: 0 -16px 8px; padding: 2px 16px 6px; scrollbar-width: none; }

@@ -35,6 +35,7 @@ export function standings(rows, betterOf) {
 // Primer día del periodo (fechas YYYY-MM-DD en hora de España).
 export function periodStart(period, today) {
   if (period === 'all') return '2000-01-01';
+  if (period === 'day') return today;
   const d = new Date(today + 'T12:00:00Z');
   if (period === 'month') d.setUTCDate(1);
   else d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7)); // lunes

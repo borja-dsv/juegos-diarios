@@ -27,6 +27,7 @@ describe('standings', () => {
 describe('periodStart', () => {
   it('semana empieza en lunes', () => expect(periodStart('week', '2026-11-18')).toBe('2026-11-16'));
   it('mes empieza el día 1', () => expect(periodStart('month', '2026-11-18')).toBe('2026-11-01'));
+  it('hoy empieza hoy', () => expect(periodStart('day', '2026-11-18')).toBe('2026-11-18'));
 });
 
 describe('streak', () => {
