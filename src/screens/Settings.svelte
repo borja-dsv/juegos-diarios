@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
-  import { loadPlayers, setStatus, setAdmin, loadAutoApprove, setAutoApprove } from '../lib/admin.js';
+  import { loadPlayers, setStatus, setAdmin, loadAutoApprove, setAutoApprove, loadAccounts } from '../lib/admin.js';
+  import ManageUser from './ManageUser.svelte';
   import { humanError, linkEmail, EMAIL_RE } from '../lib/account.js';
   import GamesAdmin from './GamesAdmin.svelte';
   import { getTheme, setTheme } from '../lib/theme.js';
@@ -17,6 +18,8 @@
     catch (e) { emailMsg = humanError(e); } finally { busyId = null; }
   }
   let autoApprove = $state(null);   // null = cargando
+  let accounts = $state({});
+  let managing = $state(null);
   let theme = $state(getTheme());
   const THEMES = [['system', 'Sistema'], ['light', 'Claro'], ['dark', 'Oscuro']];
   function pickTheme(t) { theme = t; setTheme(t); }
@@ -28,7 +31,7 @@
 
   async function reload() {
     if (!profile.is_admin) return;
-    try { [players, autoApprove] = await Promise.all([loadPlayers(), loadAutoApprove()]); } catch (e) { error = humanError(e); }
+    try { [players, autoApprove, accounts] = await Promise.all([loadPlayers(), loadAutoApprove(), loadAccounts()]); } catch (e) { error = humanError(e); }
   }
   async function act(id, fn) {
     busyId = id; error = '';
@@ -110,14 +113,17 @@
     <ul class="group">
       {#each members as p (p.id)}
         <li class="row">
-          <span class="grow"><span class="name">{p.username}</span><span class="small muted">{p.is_admin ? 'Admin' : 'Jugador'}</span></span>
+          <span class="grow"><span class="name">{p.username}</span><span class="small muted">{p.is_admin ? 'Admin' : 'Jugador'} · {accounts[p.id]?.email_confirmed ? '✅ email' : accounts[p.id]?.email_pending_masked ? '⏳ email sin confirmar' : '❌ sin email'}</span></span>
           {#if p.id !== profile.id}
             <button class="btn quiet sm" disabled={busyId === p.id} onclick={() => act(p.id, () => setAdmin(p.id, !p.is_admin))}>{p.is_admin ? 'Quitar admin' : 'Hacer admin'}</button>
+            <button class="btn quiet sm" onclick={() => (managing = p)}>Gestionar</button>
           {/if}
         </li>
       {/each}
     </ul>
   {/if}
+
+  {#if managing}<ManageUser player={managing} account={accounts[managing.id]} onClose={() => (managing = null)} onDone={(deleted) => { if (deleted) managing = null; reload(); }} />{/if}
 </main>
 
 <style>

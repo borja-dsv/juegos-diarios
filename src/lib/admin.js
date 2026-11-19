@@ -26,3 +26,28 @@ export async function setAutoApprove(on) {
   const { error } = await supabase.from('app_settings').update({ auto_approve: on, updated_at: new Date().toISOString() }).eq('id', 1);
   if (error) throw error;
 }
+
+// Gestión de cuentas (solo admins; la base de datos lo comprueba y lo anuncia en el chat general).
+export async function loadAccounts() {
+  const { data, error } = await supabase.rpc('admin_accounts');
+  if (error) throw error;
+  return Object.fromEntries(data.map((a) => [a.id, a]));
+}
+export async function adminSetEmail(id, email) {
+  const { error } = await supabase.rpc('admin_set_email', { p_id: id, p_email: email });
+  if (error) throw error;
+}
+export async function adminDeleteUser(id) {
+  const { error } = await supabase.rpc('admin_delete_user', { p_id: id });
+  if (error) throw error;
+}
+// Envía a ese jugador un email con un enlace para entrar en su cuenta.
+export async function adminSendAccessLink(id) {
+  const { data: email, error } = await supabase.rpc('admin_email_of', { p_id: id });
+  if (error) throw error;
+  if (!email) throw new Error('Esta cuenta no tiene un email confirmado. Ponle uno primero.');
+  const { error: e2 } = await supabase.auth.signInWithOtp({
+    email, options: { shouldCreateUser: false, emailRedirectTo: window.location.origin + import.meta.env.BASE_URL }
+  });
+  if (e2) throw e2;
+}
