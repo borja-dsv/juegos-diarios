@@ -53,7 +53,7 @@
   <Pending {profile} rejected={status === 'rejected'} onCheck={refresh} />
 {:else}
   {#if tab === 'hoy'}
-    <Today {profile} />
+    <Today {profile} {session} onFixEmail={() => (tab = 'ajustes')} />
   {:else if tab === 'chat'}
     <Chat channel="general" title="Chat del grupo" me={profile.id} />
   {:else if tab === 'ajustes'}

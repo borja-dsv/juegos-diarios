@@ -15,7 +15,8 @@
   import ResultSheet from './ResultSheet.svelte';
   import GameScreen from './GameScreen.svelte';
 
-  let { profile } = $props();
+  let { profile, session = null, onFixEmail = null } = $props();
+  const noEmail = $derived(session?.user && !session.user.email);
   let games = $state([]);
   let mine = $state({});            // mis resultados de hoy por juego
   let todayRows = $state([]);       // resultados de hoy que puedo ver
@@ -87,6 +88,9 @@
     <span class="muted date">{longDate()}</span>
     <span class="avatar" aria-label="Tu perfil: {profile.username}">{profile.username.charAt(0).toUpperCase()}</span>
   </div>
+  {#if noEmail}
+    <button class="emailwarn" onclick={onFixEmail}>⚠️ Tu cuenta no tiene email confirmado: si cambias de móvil o navegador, la perderás. <u>Arreglarlo</u></button>
+  {/if}
   <h1 class="hello">{!games.length ? `Hola, ${profile.username}` : pending.length ? `Te ${pending.length === 1 ? 'queda 1 juego' : `quedan ${pending.length} juegos`}` : 'Todo hecho por hoy'}</h1>
 
   <div class="bars" role="img" aria-label={tiers.map((t) => `T${t.tier}: ${t.done} de ${t.total}`).join(', ')}>
@@ -178,6 +182,7 @@
 <style>
   .top { display: flex; justify-content: space-between; align-items: center; }
   .date { font-size: 14px; font-weight: 500; }
+  .emailwarn { display: block; width: 100%; margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--amber) 45%, var(--line)); background: color-mix(in srgb, var(--amber) 9%, var(--surface)); color: var(--ink); font-size: 13px; text-align: left; cursor: pointer; }
   .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); color: var(--ink); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
   .hello { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; margin: 10px 0 16px; }
   .bars { display: flex; gap: 0; margin-top: 2px; }

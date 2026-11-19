@@ -63,6 +63,7 @@
       {#if error}<p class="error" role="alert">{error}</p>{/if}
       <button class="btn primary block" disabled={busy || !validEmail}>{busy ? 'Enviando…' : 'Enviar enlace'}</button>
     </form>
+    {#if /ninguna cuenta/.test(error)}<button class="btn quiet block" style="margin-top:8px" onclick={() => { mode = 'register'; error = ''; }}>Es mi primera vez: registrarme</button>{/if}
     <button class="link" onclick={() => { mode = 'register'; error = ''; }}>Volver</button>
 
   {:else}

@@ -149,3 +149,5 @@ nav.tabs .in { display: flex; max-width: 560px; margin: 0 auto; }
 }
 :root[data-theme="dark"] .fam, :root.fam[data-theme="dark"] { --f-btn-bg: var(--f-mid); --f-btn-fg: #0E1A1C; --f-soft-bg: color-mix(in srgb, var(--f-mid) 16%, transparent); --f-soft-fg: var(--f-mid); }
 .btn.primary { background: var(--f-btn-bg, var(--accent)); color: var(--f-btn-fg, var(--accent-ink)); }
+
+.note.warn { border-color: color-mix(in srgb, var(--amber) 45%, var(--line)); background: color-mix(in srgb, var(--amber) 8%, var(--surface)); }

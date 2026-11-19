@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { loadPlayers, setStatus, setAdmin, loadAutoApprove, setAutoApprove } from '../lib/admin.js';
-  import { humanError } from '../lib/account.js';
+  import { humanError, linkEmail, EMAIL_RE } from '../lib/account.js';
   import GamesAdmin from './GamesAdmin.svelte';
   import { getTheme, setTheme } from '../lib/theme.js';
 
@@ -9,6 +9,13 @@
   let players = $state([]);
   let error = $state('');
   let busyId = $state(null);
+  let newEmail = $state('');
+  let emailMsg = $state('');
+  async function saveEmail(addr) {
+    busyId = 'email'; emailMsg = '';
+    try { await linkEmail(addr.trim().toLowerCase()); emailMsg = 'Te hemos enviado un enlace. Ábrelo para confirmar tu email.'; }
+    catch (e) { emailMsg = humanError(e); } finally { busyId = null; }
+  }
   let autoApprove = $state(null);   // null = cargando
   let theme = $state(getTheme());
   const THEMES = [['system', 'Sistema'], ['light', 'Claro'], ['dark', 'Oscuro']];
@@ -42,7 +49,21 @@
       {#if emailOk}<b>{user.email}</b>{:else if user?.new_email}<span class="muted small">Confirma el enlace enviado a {user.new_email}</span>{:else}<span class="muted small">Sin email</span>{/if}
     </li>
   </ul>
-  {#if !emailOk}<p class="small muted">Mientras no confirmes tu email, si borras los datos del navegador perderás la cuenta.</p>{/if}
+  {#if !emailOk}
+    <div class="note warn">
+      <b>Tu cuenta aún no se puede recuperar.</b> Si cambias de móvil, de navegador o borras los datos, la perderás.
+      {#if user?.new_email}
+        Confirma el enlace que te enviamos a <b>{user.new_email}</b> (mira también en spam).
+        <button class="btn quiet sm" style="margin-top:10px" disabled={busyId === 'email'} onclick={() => saveEmail(user.new_email)}>Reenviar enlace</button>
+      {:else}
+        <form style="display:flex;gap:8px;margin-top:10px" onsubmit={(e) => { e.preventDefault(); if (EMAIL_RE.test(newEmail.trim())) saveEmail(newEmail); }}>
+          <input bind:value={newEmail} type="email" inputmode="email" autocomplete="email" placeholder="tu@email.com" aria-label="Tu email" style="flex:1;min-width:0;height:42px;padding:0 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);font-size:16px" />
+          <button class="btn primary sm" disabled={busyId === 'email' || !EMAIL_RE.test(newEmail.trim())}>Guardar</button>
+        </form>
+      {/if}
+      {#if emailMsg}<p class="small" style="margin:8px 0 0">{emailMsg}</p>{/if}
+    </div>
+  {/if}
 
   <h2>Apariencia</h2>
   <div class="themes" role="radiogroup" aria-label="Apariencia">

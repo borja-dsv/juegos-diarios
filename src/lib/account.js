@@ -7,7 +7,8 @@ export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function humanError(e) {
   const m = String(e?.message || e || '');
   if (/profiles_username_lower|duplicate key/i.test(m)) return 'Ese nombre ya está cogido. Prueba con otro.';
-  if (/rate limit|too many/i.test(m)) return 'Demasiados intentos seguidos. Espera unos minutos y vuelve a probar.';
+  if (/signups not allowed/i.test(m)) return 'No hay ninguna cuenta con ese email confirmado. Si es tu primera vez, regístrate. Si ya te registraste, pide ayuda a un admin del grupo.';
+  if (/rate limit|too many/i.test(m)) return 'Se han enviado demasiados emails seguidos. Espera un rato (hasta una hora) y vuelve a probar.';
   if (/anonymous sign-ins are disabled/i.test(m)) return 'El registro aún no está activado. Avisa al admin.';
   if (/token has expired|invalid/i.test(m)) return 'El código no es válido o ha caducado. Pide otro.';
   if (/fetch|network/i.test(m)) return 'Sin conexión. Revisa internet y vuelve a probar.';
@@ -49,4 +50,10 @@ export async function loadProfile(userId) {
   const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
   if (error) throw error;
   return data;
+}
+
+// Añadir o volver a enviar el email de recuperación (cuentas creadas sin que se guardara el email).
+export async function linkEmail(email) {
+  const { error } = await supabase.auth.updateUser({ email }, { emailRedirectTo: appUrl() });
+  if (error) throw error;
 }
