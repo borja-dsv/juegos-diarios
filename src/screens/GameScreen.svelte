@@ -12,7 +12,7 @@
   import CorrectSheet from './CorrectSheet.svelte';
   import DiceIcon from './DiceIcon.svelte';
 
-  let { game, me, isAdmin = false, mine = null, onBack, onPlay, onRecord } = $props();
+  let { game, me, isAdmin = false, mine = null, next = null, onBack, onPlay, onRecord, onPlayNext = null } = $props();
   let history = $state([]);
   let error = $state('');
   let loaded = $state(false);
@@ -68,7 +68,16 @@
         {/if}
       </div>
 
-      <button class="btn primary block" onclick={onPlay}><DiceIcon size={24} />Volver a jugar <span class="keep">(tu resultado no cambia)</span></button>
+      {#if next}
+        <button class="nextcard fam" style={famStyleFor(next.id)} onclick={() => onPlayNext?.(next)} aria-label="Siguiente juego: jugar a {next.name}">
+          <span class="nthumb"><GameArt game={next} height={56} rounded /></span>
+          <span class="ntext"><span class="nlabel">Siguiente juego</span><span class="nname">{next.name}</span><span class="ncat">{next.category}</span></span>
+          <span class="nplay"><DiceIcon size={30} /></span>
+        </button>
+      {:else}
+        <div class="alldone">🎉 Has terminado todos los juegos de hoy</div>
+      {/if}
+      <button class="btn quiet block" onclick={onPlay}><DiceIcon size={22} />Volver a jugar <span class="keep">(tu resultado no cambia)</span></button>
       <button class="btn block chat" onclick={() => (chatOpen = true)}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>
         Chat de {game.name}
@@ -115,7 +124,8 @@
 
 <style>
   .screen { position: fixed; inset: 0; z-index: 25; background: var(--bg); overflow-y: auto; }
-  header { position: relative; }
+  header { position: relative; max-width: 560px; margin: 0 auto; }
+  @media (min-width: 600px) { header { margin-top: 16px; border-radius: 20px; overflow: hidden; } }
   .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.3), rgba(0,0,0,0) 35%, rgba(0,0,0,.72)); }
   .back { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); left: 14px; width: 44px; height: 44px; border-radius: 22px; border: 0; background: rgba(0,0,0,.35); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .title { position: absolute; left: 16px; right: 16px; bottom: -30px; display: flex; align-items: flex-end; gap: 12px; }
@@ -131,6 +141,17 @@
   .bigmedal { width: 72px; height: 72px; flex-direction: column; font-size: 11px; font-weight: 700; }
   .bigmedal .num { font-size: 26px; line-height: 1; }
   .chat { background: var(--f-soft-bg); color: var(--f-soft-fg); }
+  .nextcard { display: flex; align-items: center; gap: 14px; width: 100%; padding: 12px; border: 0; border-radius: var(--radius); background: var(--f-soft-bg); color: var(--ink); text-align: left; cursor: pointer; transition: transform .12s ease; animation: pop .35s ease-out; }
+  .nextcard:active { transform: scale(.98); }
+  .nthumb { width: 56px; flex: none; }
+  .ntext { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .nlabel { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--f-soft-fg); }
+  .nname { font-family: var(--display); font-size: 19px; font-weight: 800; }
+  .ncat { font-size: 13px; color: var(--muted); }
+  .nplay { width: 52px; height: 52px; flex: none; border-radius: 14px; background: var(--f-btn-bg); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px color-mix(in srgb, var(--f-btn-bg) 40%, transparent); }
+  .alldone { padding: 14px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); text-align: center; font-weight: 650; }
+  @keyframes pop { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .nextcard { animation: none; transition: none; } }
   .keep { font-size: 13px; font-weight: 500; opacity: .85; }
   .head { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; }
   .head h2 { margin: 0; }
