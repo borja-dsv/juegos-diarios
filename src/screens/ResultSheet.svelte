@@ -82,7 +82,7 @@
     {/if}
 
     {#if error}<p class="error" role="alert">{error}</p>{/if}
-    <div class="actions"><button class="btn quiet" disabled={busy} onclick={justDone}>Hecho, sin resultado</button></div>
+    <div class="actions"><button class="btn quiet" disabled={busy} onclick={justDone}>Hecho, sin resultado</button><button class="btn quiet" disabled={busy} onclick={onClose}>Aún no lo he jugado</button></div>
   </div>
 </div>
 

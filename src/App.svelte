@@ -23,6 +23,7 @@
       profile = session ? await loadProfile(session.user.id) : null;
       if (!profile) status = 'welcome';
       else status = profile.status === 'approved' ? 'app' : profile.status;
+      if (status === 'app') supabase.rpc('touch_seen').then(() => {}, () => {}); // actividad para los admins
     } catch (e) {
       errorMsg = humanError(e);
       status = 'error';

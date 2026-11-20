@@ -176,7 +176,7 @@
 </main>
 
 {#if viewing}<GameScreen game={viewing} me={profile.id} isAdmin={profile.is_admin} mine={mine[viewing.id]} onBack={() => (viewing = null)} onPlay={() => play(viewing)} onRecord={() => record(viewing)} />{/if}
-{#if playing}<Player game={playing} done={!!mine[playing.id]} onExit={() => (playing = null)} onRecord={() => record(playing)} />{/if}
+{#if playing}<Player game={playing} done={!!mine[playing.id]} onExit={() => { const g = playing; playing = null; if (!mine[g.id]) recording = g; }} onRecord={() => record(playing)} />{/if}
 {#if recording}<ResultSheet game={recording} hue={0} openedAt={getPlaying()?.gameId === recording.id ? new Date(getPlaying().t).toISOString() : null} onClose={() => (recording = null)} onSaved={saved} />{/if}
 
 <style>

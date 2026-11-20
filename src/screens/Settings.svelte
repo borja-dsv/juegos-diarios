@@ -23,6 +23,17 @@
   let season = $state(null);
   let confirmReset = $state(false);
   const FIRST_DAY = '2026-11-18';   // primer día con resultados
+  // "hace 5 min", "hoy 14:26", "ayer 09:48", "18 nov"
+  function ago(t) {
+    if (!t) return 'nunca';
+    const d = new Date(t), mins = (Date.now() - d) / 6e4;
+    if (mins < 60) return `hace ${Math.max(1, Math.round(mins))} min`;
+    const day = (x) => x.toLocaleDateString('es-ES', { timeZone: 'Europe/Madrid' });
+    const hm = d.toLocaleTimeString('es-ES', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit' });
+    if (day(d) === day(new Date())) return `hoy ${hm}`;
+    if (day(d) === day(new Date(Date.now() - 864e5))) return `ayer ${hm}`;
+    return d.toLocaleDateString('es-ES', { timeZone: 'Europe/Madrid', day: 'numeric', month: 'short' });
+  }
   const fmtDay = (d) => new Date(d + 'T12:00:00Z').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
   let managing = $state(null);
   let theme = $state(getTheme());
@@ -131,7 +142,8 @@
     <ul class="group">
       {#each members as p (p.id)}
         <li class="row">
-          <span class="grow"><span class="name">{p.username}</span><span class="small muted">{p.is_admin ? 'Admin' : 'Jugador'} · {accounts[p.id]?.email_confirmed ? '✅ email' : accounts[p.id]?.email_pending_masked ? '⏳ email sin confirmar' : '❌ sin email'}</span></span>
+          <span class="grow"><span class="name">{p.username}</span><span class="small muted">{p.is_admin ? 'Admin' : 'Jugador'} · {accounts[p.id]?.email_confirmed ? '✅ email' : accounts[p.id]?.email_pending_masked ? '⏳ email sin confirmar' : '❌ sin email'}</span>
+            {#if accounts[p.id]}<span class="small muted act">Visto {ago(accounts[p.id].last_seen_at)} · {accounts[p.id].visits} {accounts[p.id].visits === 1 ? 'visita' : 'visitas'} · {accounts[p.id].results_total} {accounts[p.id].results_total == 1 ? 'partida' : 'partidas'} ({accounts[p.id].results_today} hoy)</span>{/if}</span>
           {#if p.id !== profile.id}
             <button class="btn quiet sm" disabled={busyId === p.id} onclick={() => act(p.id, () => setAdmin(p.id, !p.is_admin))}>{p.is_admin ? 'Quitar admin' : 'Hacer admin'}</button>
             <button class="btn quiet sm" onclick={() => (managing = p)}>Gestionar</button>
@@ -145,6 +157,7 @@
 </main>
 
 <style>
+  .act { display: block; }
   .switch { flex: none; width: 52px; height: 32px; border-radius: 16px; border: 0; padding: 3px; background: var(--line); cursor: pointer; transition: background .2s ease; }
   .switch span { display: block; width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s ease; }
   .switch[aria-checked='true'] { background: var(--f-btn-bg, var(--accent)); }
