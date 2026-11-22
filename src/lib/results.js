@@ -57,7 +57,7 @@ export function clearPlaying() {
   try { localStorage.removeItem(KEY); } catch {}
 }
 
-const COLS = 'id, user_id, game_id, day, value, failed, display, source, created_at, corrected_by, profiles!results_user_id_fkey(username)';
+const COLS = 'id, user_id, game_id, day, value, failed, display, source, created_at, corrected_by, details, profiles!results_user_id_fkey(username)';
 
 // Resultados de todos (visibles para mí) desde un día hasta ayer.
 // Hoy no cuenta en los rankings de periodo: cada uno ve hoy distinto según lo que ha jugado.

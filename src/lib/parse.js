@@ -65,7 +65,10 @@ export const PARSERS = {
   perceptle(t) {
     const m = t.match(/Perceptle\s*#(\d+)\s*-\s*([A-F][+-]?)\s*\((\d+)\)/i);
     if (!m) return null;
-    return { puzzle: +m[1], value: +m[3], failed: false, display: `${m[3]} (${m[2].toUpperCase()})` };
+    // Áreas: 🔢 Count · 🎯 Track · 📐 Angle · 🥁 Tempo · ✂️ Split
+    const a = t.match(/🔢\s*(\d+)\s*🎯\s*(\d+)\s*📐\s*(\d+)\s*🥁\s*(\d+)\s*✂\S*\s*(\d+)/u);
+    const details = a ? { count: +a[1], track: +a[2], angle: +a[3], tempo: +a[4], split: +a[5] } : undefined;
+    return { puzzle: +m[1], value: +m[3], failed: false, display: `${m[3]} (${m[2].toUpperCase()})`, details };
   }
 };
 

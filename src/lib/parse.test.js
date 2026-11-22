@@ -37,6 +37,9 @@ describe('lectores por juego (ejemplos reales)', () => {
     expect(parseShare(EX.fermi, g('poople', 'Poople'), TODAY).error).toMatch(/otro juego \(fermi\)/);
     expect(detectGame(EX.maptap)).toBe('maptap');
   });
+  it('Perceptle guarda las 5 áreas', () => {
+    expect(parseShare(EX.perceptle, g('perceptle'), TODAY).details).toEqual({ count: 95, track: 91, angle: 87, tempo: 4, split: 68 });
+  });
   it('fallo en Poople', () => {
     expect(parseShare('Poople #461 X/5', g('poople'), TODAY)).toMatchObject({ failed: true, value: null });
   });

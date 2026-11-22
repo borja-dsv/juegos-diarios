@@ -11,6 +11,7 @@
   import Chat from './Chat.svelte';
   import CorrectSheet from './CorrectSheet.svelte';
   import DiceIcon from './DiceIcon.svelte';
+  import PerceptleAreas from './PerceptleAreas.svelte';
 
   let { game, me, isAdmin = false, mine = null, next = null, onBack, onPlay, onRecord, onPlayNext = null } = $props();
   let history = $state([]);
@@ -106,6 +107,8 @@
         <button class="btn quiet" onclick={onRecord}>Apuntar resultado</button>
       </div>
     {/if}
+
+    {#if mine && game.id === 'perceptle'}<PerceptleAreas rows={todayRows} {me} mine={myToday ?? mine} />{/if}
 
     {#if loaded}
       <h2>Tú en {game.name}</h2>
