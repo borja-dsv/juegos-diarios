@@ -106,3 +106,16 @@ export async function voidResult(id) {
   const { error } = await supabase.from('results').delete().eq('id', id);
   if (error) throw error;
 }
+
+// Juego del día (×2). La base de datos lo elige la primera vez que se pide cada día.
+export async function loadGameOfDay() {
+  const { data, error } = await supabase.rpc('game_of_day');
+  if (error) throw error;
+  return data;
+}
+// Juegos del día de un periodo: { 'YYYY-MM-DD': game_id }
+export async function loadPicks(from) {
+  const { data, error } = await supabase.from('daily_pick').select('day, game_id').gte('day', from);
+  if (error) throw error;
+  return Object.fromEntries(data.map((p) => [p.day, p.game_id]));
+}

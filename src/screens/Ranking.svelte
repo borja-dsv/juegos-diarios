@@ -2,7 +2,7 @@
   // Ranking de semana, mes o siempre: general o por juego. Puntos 3-2-1 por puesto + victorias.
   import { onMount } from 'svelte';
   import { loadGames } from '../lib/games.js';
-  import { loadStandings, loadResultsBetween, rank } from '../lib/results.js';
+  import { loadStandings, loadResultsBetween, rank, loadPicks } from '../lib/results.js';
   import { placeTable, periodStart, POINTS } from '../lib/standings.js';
   import { madridToday } from '../lib/day.js';
   import { humanError } from '../lib/account.js';
@@ -17,7 +17,8 @@
   let games = $state([]);
   let rows = $state([]);
   let season = $state('2000-01-01');
-  let visible = $state([]);           // resultados que puedo ver (los de hoy, solo de juegos que ya he jugado)
+  let visible = $state([]);
+  let picks = $state({});            // juego del día de cada fecha (×2)           // resultados que puedo ver (los de hoy, solo de juegos que ya he jugado)
   let error = $state('');
   let loaded = $state(false);
 
@@ -35,7 +36,7 @@
     for (const list of groups.values()) {
       for (const r of rank(list, gameOf(list[0].game_id)?.better ?? 'low')) {
         if (!byUser.has(r.user_id)) byUser.set(r.user_id, []);
-        byUser.get(r.user_id).push({ ...r, pts: POINTS[r.pos] || 0, game: gameOf(r.game_id) });
+        byUser.get(r.user_id).push({ ...r, x2: picks[r.day] === r.game_id, pts: (POINTS[r.pos] || 0) * (picks[r.day] === r.game_id ? 2 : 1), game: gameOf(r.game_id) });
       }
     }
     for (const list of byUser.values()) list.sort((a, b) => b.day.localeCompare(a.day) || (a.game?.sort ?? 0) - (b.game?.sort ?? 0));
@@ -49,9 +50,10 @@
     loaded = false; error = '';
     try {
       if (!games.length) [games, season] = await Promise.all([loadGames(), loadSeasonStart()]);
-      [rows, visible] = await Promise.all([
+      [rows, visible, picks] = await Promise.all([
         loadStandings(periodStart(period, today), gameId, gameId === null && scope === 't1' ? 1 : null),
-        loadResultsBetween(periodStart(period, today) > season ? periodStart(period, today) : season, tomorrow)
+        loadResultsBetween(periodStart(period, today) > season ? periodStart(period, today) : season, tomorrow),
+        loadPicks(periodStart(period, today)).catch(() => ({}))
       ]);
     } catch (e) { error = humanError(e); }
     loaded = true;
@@ -126,7 +128,7 @@
           {#each list as r (r.id)}
             <li>
               <span class="dday">{dayLabel(r.day)}</span>
-              <span class="dgame">{#if !gameId}<span aria-hidden="true">{r.game?.emoji}</span> {r.game?.name}{/if}</span>
+              <span class="dgame">{#if !gameId}<span aria-hidden="true">{r.game?.emoji}</span> {r.game?.name}{/if}{#if r.x2} <b class="x2">×2</b>{/if}</span>
               <span class="dval">{r.display}</span>
               <span class="dpos" class:win={r.pos === 1}>{r.pos ? `${r.pos}º` : '—'}{r.pts ? ` · ${r.pts} ${r.pts === 1 ? 'pt' : 'pts'}` : ''}</span>
             </li>
@@ -139,7 +141,7 @@
     {/each}
 
     {#if season > '2000-01-01'}<p class="small muted">Temporada desde el {new Date(season + 'T12:00:00Z').toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}.</p>{/if}
-    <p class="small muted">{gameId === null ? (scope === 't1' ? 'Cuentan solo los juegos T1. ' : 'Cuentan todos los juegos. ') : ''}Cada juego y día: 1º = 3 pts, 2º = 2 pts, 3º = 1 pt. Los empates comparten puesto y puntos. Incluye los resultados de hoy.</p>
+    <p class="small muted">{gameId === null ? (scope === 't1' ? 'Cuentan solo los juegos T1. ' : 'Cuentan todos los juegos. ') : ''}Cada juego y día: 1º = 3 pts, 2º = 2 pts, 3º = 1 pt. Los empates comparten puesto y puntos. El juego del día vale el doble. Incluye los resultados de hoy.</p>
   {/if}
 </main>
 
@@ -170,6 +172,7 @@
   .c1 { width: 22px; font-weight: 700; color: var(--muted); } .c2 { width: 64px; text-align: right; } .c3 { width: 52px; text-align: right; font-size: 18px; }
   .thead .c3 { font-size: 12px; }
   .dh { margin-top: 28px; }
+  .x2 { font-size: 11px; padding: 0 5px; border-radius: 5px; background: #F2C744; color: #3A2A00; }
   .det { background: var(--surface); border-radius: 16px; margin-bottom: 8px; overflow: hidden; }
   .det summary { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; list-style: none; min-height: 52px; }
   .det summary::-webkit-details-marker { display: none; }

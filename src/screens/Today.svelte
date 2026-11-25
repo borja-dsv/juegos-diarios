@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { loadGames } from '../lib/games.js';
-  import { loadMyToday, loadMyDays, loadTodayVisible, rank, markPlaying, getPlaying, clearPlaying } from '../lib/results.js';
+  import { loadMyToday, loadMyDays, loadTodayVisible, rank, markPlaying, getPlaying, clearPlaying, loadGameOfDay } from '../lib/results.js';
   import { streak } from '../lib/standings.js';
   import { madridToday, longDate } from '../lib/day.js';
   import { catStyle } from '../lib/categories.js';
@@ -21,6 +21,8 @@
   let mine = $state({});            // mis resultados de hoy por juego
   let todayRows = $state([]);       // resultados de hoy que puedo ver
   let days = $state([]);            // días en los que he jugado
+  let gotdId = $state(null);        // juego del día (×2)
+  const gotd = $derived(games.find((g) => g.id === gotdId) ?? null);
   let error = $state('');
   let loaded = $state(false);
   let playing = $state(null);       // juego abierto a pantalla completa
@@ -51,7 +53,7 @@
 
   async function load() {
     try {
-      [games, mine, todayRows, days] = await Promise.all([loadGames(), loadMyToday(profile.id), loadTodayVisible(), loadMyDays(profile.id)]);
+      [games, mine, todayRows, days, gotdId] = await Promise.all([loadGames(), loadMyToday(profile.id), loadTodayVisible(), loadMyDays(profile.id), loadGameOfDay().catch(() => null)]);
     } catch (e) { error = humanError(e); }
     loaded = true;
   }
@@ -112,6 +114,18 @@
     {#if winsToday}<span aria-hidden="true">·</span><span>Ganas <b>{winsToday}</b></span>{/if}
   </p>
 
+  {#if gotd}
+    <div class="gotd fam" style="{catStyle(gotd.category)};{famStyleFor(gotd.id)}">
+      <span class="gthumb"><GameArt game={gotd} height={64} rounded /></span>
+      <button class="gtext" onclick={() => (viewing = gotd)} aria-label="Juego del día: {gotd.name}. Ver ranking">
+        <span class="glabel"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill="currentColor"/></svg> Juego del día · puntos ×2</span>
+        <span class="gname">{gotd.name}</span>
+        <span class="gsub">{mine[gotd.id] ? `Hecho: ${mine[gotd.id].display}` : 'Vale el doble en el ranking'}</span>
+      </button>
+      {#if !mine[gotd.id]}<button class="play gplay" onclick={() => play(gotd)} aria-label="Jugar al juego del día: {gotd.name}"><DiceIcon size={30} /></button>{/if}
+    </div>
+  {/if}
+
   {#if error}<p class="error">{error}</p>{/if}
   {#if loaded && !games.length && !error}<p class="lead">Aún no hay juegos. Un admin puede añadirlos en Ajustes.</p>{/if}
 
@@ -129,7 +143,7 @@
           <button class="main" onclick={() => (viewing = g)} aria-label="Ver {g.name}: ranking y resultado">
             <span class="thumb"><GameArt game={g} height={48} rounded /></span>
             <span class="grow">
-              <span class="name">{g.name}</span>
+              <span class="name">{g.name}{#if g.id === gotdId}<span class="x2">×2</span>{/if}</span>
               <span class="sub"><span class="dot"></span>{g.category}</span>
             </span>
           </button>
@@ -175,13 +189,23 @@
   {/if}
 </main>
 
-{#if viewing}<GameScreen game={viewing} me={profile.id} isAdmin={profile.is_admin} mine={mine[viewing.id]} next={pending.find((g) => g.id !== viewing.id) ?? null} onPlayNext={(g) => play(g)} onBack={() => (viewing = null)} onPlay={() => play(viewing)} onRecord={() => record(viewing)} />{/if}
+{#if viewing}<GameScreen game={viewing} isGotd={viewing.id === gotdId} me={profile.id} isAdmin={profile.is_admin} mine={mine[viewing.id]} next={pending.find((g) => g.id !== viewing.id) ?? null} onPlayNext={(g) => play(g)} onBack={() => (viewing = null)} onPlay={() => play(viewing)} onRecord={() => record(viewing)} />{/if}
 {#if playing}<Player game={playing} done={!!mine[playing.id]} onExit={() => { const g = playing; playing = null; if (!mine[g.id]) recording = g; }} onRecord={() => record(playing)} />{/if}
 {#if recording}<ResultSheet game={recording} hue={0} openedAt={getPlaying()?.gameId === recording.id ? new Date(getPlaying().t).toISOString() : null} onClose={() => (recording = null)} onSaved={saved} />{/if}
 
 <style>
   .top { display: flex; justify-content: space-between; align-items: center; }
   .date { font-size: 14px; font-weight: 500; }
+  .gotd { display: flex; align-items: center; gap: 12px; margin: 16px 0 4px; padding: 12px; border-radius: var(--radius); background: var(--f-soft-bg); border: 1.5px solid color-mix(in srgb, var(--f-btn-bg) 35%, transparent); animation: glow 2.4s ease-in-out infinite alternate; }
+  .gthumb { width: 64px; flex: none; }
+  .gtext { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; background: none; border: 0; padding: 0; text-align: left; color: inherit; cursor: pointer; }
+  .glabel { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--f-soft-fg); }
+  .gname { font-family: var(--display); font-size: 21px; font-weight: 800; }
+  .gsub { font-size: 13px; color: var(--muted); }
+  .gplay { width: 52px; height: 52px; border-radius: 14px; }
+  .x2 { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 6px; font-size: 11px; font-weight: 800; vertical-align: 2px; background: var(--f-btn-bg); color: var(--f-btn-fg); }
+  @keyframes glow { from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--f-btn-bg) 0%, transparent); } to { box-shadow: 0 0 18px 0 color-mix(in srgb, var(--f-btn-bg) 30%, transparent); } }
+  @media (prefers-reduced-motion: reduce) { .gotd { animation: none; } }
   .emailwarn { display: block; width: 100%; margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--amber) 45%, var(--line)); background: color-mix(in srgb, var(--amber) 9%, var(--surface)); color: var(--ink); font-size: 13px; text-align: left; cursor: pointer; }
   .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); color: var(--ink); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
   .hello { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; margin: 10px 0 16px; }

@@ -13,7 +13,7 @@
   import DiceIcon from './DiceIcon.svelte';
   import PerceptleAreas from './PerceptleAreas.svelte';
 
-  let { game, me, isAdmin = false, mine = null, next = null, onBack, onPlay, onRecord, onPlayNext = null } = $props();
+  let { game, me, isAdmin = false, isGotd = false, mine = null, next = null, onBack, onPlay, onRecord, onPlayNext = null } = $props();
   let history = $state([]);
   let error = $state('');
   let loaded = $state(false);
@@ -49,7 +49,7 @@
       <span class="badge" aria-hidden="true">{game.emoji}</span>
       <div>
         <h1>{game.name}</h1>
-        <span class="sub">{game.category} · gana el {game.better === 'low' ? 'más bajo' : 'más alto'}</span>
+        <span class="sub">{#if isGotd}<span class="gotdtag"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill="currentColor"/></svg> Juego del día · ×2</span>{/if}{game.category} · gana el {game.better === 'low' ? 'más bajo' : 'más alto'}</span>
       </div>
     </div>
   </header>
@@ -134,6 +134,7 @@
   .title { position: absolute; left: 16px; right: 16px; bottom: -30px; display: flex; align-items: flex-end; gap: 12px; }
   .title h1 { color: #fff; font-size: 30px; margin: 0; text-shadow: 0 1px 8px rgba(0,0,0,.35); }
   .sub { display: block; color: rgba(255,255,255,.92); font-size: 13px; font-weight: 600; padding-bottom: 36px; text-shadow: 0 1px 6px rgba(0,0,0,.4); }
+  .gotdtag { display: inline-flex; align-items: center; gap: 4px; margin-right: 8px; padding: 2px 8px; border-radius: 8px; background: #F2C744; color: #3A2A00; font-size: 12px; font-weight: 800; text-shadow: none; }
   .badge { width: 64px; height: 64px; flex: none; border-radius: 20px; background: var(--surface); border: 3px solid var(--bg); display: flex; align-items: center; justify-content: center; font-size: 32px; }
   main { max-width: 560px; margin: 0 auto; padding: 46px 16px calc(32px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 12px; }
   main h2 { margin: 8px 0 0; }
