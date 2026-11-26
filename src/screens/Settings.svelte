@@ -84,6 +84,8 @@
     </div>
   {/if}
 
+  <p class="small muted" style="margin:8px 4px 0">Versión de la app: {__APP_VERSION__}</p>
+
   <h2>Apariencia</h2>
   <div class="themes" role="radiogroup" aria-label="Apariencia">
     {#each THEMES as [id, label]}

@@ -5,12 +5,17 @@ import { VitePWA } from 'vite-plugin-pwa';
 // La web se publica en https://borja-dsv.github.io/juegos-diarios/
 const base = '/juegos-diarios/';
 
+// Versión: fecha y hora de la publicación (hora de España), para ver en Ajustes si el móvil tiene la última.
+const VERSION = new Intl.DateTimeFormat('es-ES', { timeZone: 'Europe/Madrid', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date());
+
 export default defineConfig({
   base,
+  define: { __APP_VERSION__: JSON.stringify(VERSION) },
   plugins: [
     svelte(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: false, // lo registramos en main.js para buscar versiones nuevas y recargar solos
       manifest: {
         name: 'Juegos diarios',
         short_name: 'Juegos',
